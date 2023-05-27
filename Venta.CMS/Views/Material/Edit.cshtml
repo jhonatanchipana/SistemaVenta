@@ -1,0 +1,117 @@
+﻿@using SistemaVenta.Entities.Enums;
+@using Venta.Dto.Object.Material;
+@model PostMaterialViewModel
+
+@{
+    ViewData["Title"] = "Actualizar Material";
+
+    var listUnitMeasurement = Html.GetEnumSelectList<UnitMeasurementType>();
+    var comboUnitMeasurement = new List<SelectListItem>()
+    {
+        new SelectListItem()
+        {
+            Value = string.Empty,
+            Text = "Seleccionar una opción"
+        }
+    };
+
+    comboUnitMeasurement.AddRange(listUnitMeasurement);
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Materiales/</span> Actualizar</h4>
+
+    <!-- Basic Layout & Basic with Icons -->
+    <div class="row">
+        <!-- Basic Layout -->
+        <div class="col-xxl">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Material</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" id="form">
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="Name"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Ingrese el nombre del material" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="Description"></label>
+                            <div class="col-sm-10">
+                                <textarea asp-for="Description"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Ingrese una descripción"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="Cost"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="Cost"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="0.00" />
+                                <span asp-validation-for="Cost" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="UnitQuantity"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="UnitQuantity"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="0" />
+                                <span asp-validation-for="UnitQuantity" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="UnitMeasurement"></label>
+                            <div class="col-sm-10">
+                                <select asp-for="UnitMeasurement" asp-items="@comboUnitMeasurement"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="0"></select>
+                                <span asp-validation-for="UnitMeasurement" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="Stock"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="Stock"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="0"
+                                       disabled
+                                       value="0" />
+                                <span asp-validation-for="Stock" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary" id="btn-registrar">Actualizar</button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+    </script>
+
+    <script src="~/js/material/edit.js" asp-append-version="true"></script>
+
+}
