@@ -15,7 +15,7 @@ namespace SistemaVenta.Entities
         /// <summary>
         /// Descripcion de la ropa
         /// </summary>
-        public string? Descripcion { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Precio sugerido de la ropa
@@ -35,7 +35,7 @@ namespace SistemaVenta.Entities
         /// <summary>
         /// Modelo de la ropa
         /// </summary>
-        public int ClothingModelId { get; set; }
+        //public int ClothingModelId { get; set; }
 
         /// <summary>
         /// Modelo de la ropa

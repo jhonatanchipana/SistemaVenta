@@ -3,8 +3,8 @@
     var actionName = ViewContext.RouteData.Values["action"]?.ToString();
     var url = $"/{controllerName}/{actionName}";
 
-    var material1 = new[] { "/Material/Index", "/Material/Create", "/Material/Edit" };
-    var material2 = new[] { "/Material/Index", "/Material/Create", "/Material/Edit" };
+    var material = new[] { "/Material/Index", "/Material/Create", "/Material/Edit" };
+    var buyMaterial = new[] { "/Purchase/Index", "/Purchase/Create", "/Purchase/Edit" };
     
 }
 
@@ -66,20 +66,20 @@
 
     <ul class="menu-inner py-1">
         
-        <li class="menu-item @(material1.Contains(url) ? "active open" : string.Empty)">
+        <li class="menu-item @(material.Contains(url) ? "active open" : string.Empty) @(buyMaterial.Contains(url) ? "active open" : string.Empty)">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-cut"></i>
                 <div data-i18n="Analytics">Materiales</div>
             </a>
 
             <ul class="menu-sub">
-                <li class="menu-item @(material1.Contains(url) ? "active" : string.Empty)">
-                    <a asp-controller="Material" asp-action="" class="menu-link">
+                <li class="menu-item @(material.Contains(url) ? "active" : string.Empty)">
+                    <a asp-controller="Material" asp-action="Index" class="menu-link">
                         <div data-i18n="Without menu">Mantenimiento de Materiales</div>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a asp-controller="Material" asp-action="" class="menu-link">
+                <li class="menu-item @(buyMaterial.Contains(url) ? "active" : string.Empty)">
+                    <a asp-controller="Purchase" asp-action="Index" class="menu-link">
                         <div data-i18n="Without navbar">Compra de Materiales</div>
                     </a>
                 </li>

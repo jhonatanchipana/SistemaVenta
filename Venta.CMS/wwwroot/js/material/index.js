@@ -48,7 +48,7 @@ function Listado() {
         totalField: 'rows',
         columns: columns,
         sortOrder: 'desc',
-        sortName: 'Id',
+        sortName: 'CreateBy',
         locale: 'es-MX',
         /*formatRecordsPerPage: function (pageNumber) {
             return pageNumber + 'registros por pagina';
@@ -67,6 +67,7 @@ function Listado() {
             };
         },
         responseHandler: function (res) {
+            console.log(res);
             return res;
         }
     });

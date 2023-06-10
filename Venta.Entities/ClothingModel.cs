@@ -13,16 +13,16 @@
         /// <summary>
         /// Descripcion del modelo
         /// </summary>
-        public string? Descripcion { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Categoria asociado al modelo
         /// </summary>
-        public int ClothingCategoryId { get; set; } 
+        //public int ClothingCategoryId { get; set; } 
 
         /// <summary>
         /// Categoria asociado al modelo
         /// </summary>
-        public ClothingCategory? ClothingCategory { get; set; } 
+        //public ClothingCategory? ClothingCategory { get; set; } 
     }
 }

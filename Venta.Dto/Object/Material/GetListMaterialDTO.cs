@@ -38,9 +38,14 @@ namespace Venta.Dto.Object.Material
         public int UnitQuantity { get; set; }
 
         /// <summary>
-        /// Unidad de medidad del material
+        /// Identificador de la Unidad de medidad del material
         /// </summary>
-        public int UnitMeasurement { get; set; }
+        public int UnitMeasurementId { get; set; }
+
+        /// <summary>
+        /// Descripcion de la Unidad de Medida del material
+        /// </summary>
+        public string UnitMeasurementName { get; set; } = string.Empty;
 
         /// <summary>
         /// Stock del material

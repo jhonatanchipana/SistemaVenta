@@ -52,26 +52,5 @@ namespace Venta.Data.Repository
             _context.Update(entity);
         }
 
-        public void ChangeStatus(int id, bool isActive, string user)
-        {
-            var entity = _context.Campaign.FirstOrDefault(x => x.Id == id && x.DeletionDate == null);
-            if (entity != null)
-            {
-                entity.IsActive = isActive;
-                entity.ModifiedBy = user;
-                entity.ModificationDate = DateTime.UtcNow;
-                _context.Update(entity);
-            }
-        }
-
-        public void Delete(int id, string user)
-        {
-            var entity = _context.Campaign.FirstOrDefault(x => x.Id == id && x.DeletionDate == null);
-            if (entity != null)
-            {
-                entity.DeletionDate = DateTime.UtcNow;
-                _context.Update(entity);
-            }
-        }
     }
 }

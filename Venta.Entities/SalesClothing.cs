@@ -1,28 +1,43 @@
 ﻿namespace SistemaVenta.Entities
 {
     /// <summary>
-    /// Representa una venta
+    /// Representa el detalle de la venta
     /// </summary>
     public class SalesClothing : BaseEntity
     {
         /// <summary>
-        /// Fecha de la venta
+        /// Venta Id
         /// </summary>
-        public DateTime SaleDate { get; set; } 
+        public int SalesId { get; set; }
 
         /// <summary>
-        /// Cantidad total de ropa de la venta
+        /// Venta
         /// </summary>
-        public int QuantityTotal { get; set; }
+        public Sales? Sales { get; set; }
 
         /// <summary>
-        /// Precio total de la venta
+        /// Ropa de la venta
         /// </summary>
-        public decimal PriceTotal { get; set; }
+        public int ClothingId { get; set; }
 
         /// <summary>
-        /// Inversion total de la venta
+        /// Ropa de la venta
         /// </summary>
-        public decimal Investment { get; set; }
+        public Clothing? Clothing { get; set; }
+
+        /// <summary>
+        /// Cantidad vendido
+        /// </summary>
+        public int Quantity { get; set; }
+
+        /// <summary>
+        /// Precio vendido
+        /// </summary>
+        public decimal PriceSold { get; set; }
+
+        /// <summary>
+        /// Inversion por unidad
+        /// </summary>
+        public decimal InvestmentUnit { get; set; }
     }
 }

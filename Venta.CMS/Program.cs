@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Venta.CMS.Middleware;
 using Venta.Data.Connection;
 using Venta.Data.Interfaces;
 using Venta.Data.Repository;
-using Venta.Dto.Object.Authentication;
-using Venta.Services;
+using Venta.Dto.Object.Account;
 using Venta.Services.Bussiness;
 using Venta.Services.Interface;
 
@@ -17,15 +17,12 @@ var politicaUsuariosAutenticados = new AuthorizationPolicyBuilder()
     .Build();
 
 //
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//repository
-builder.Services.AddTransient<IMaterialRepository, MaterialRepository>();
-//services
-builder.Services.AddTransient<IServiceMaterial, ServiceMaterial>();
-builder.Services.AddTransient<IUserStore<UserDTO>, UsersStore>();
 builder.Services.AddTransient<SignInManager<UserDTO>>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddIdentityCore<UserDTO>();
+
+//Inyeccion de servicios
+builder.Services.AddApplicationDependencies(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(opciones =>
@@ -45,7 +42,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme;
 }).AddCookie(IdentityConstants.ApplicationScheme, opciones =>
 {
-    opciones.LoginPath = "/authentication/login";
+    opciones.LoginPath = "/account/login";
 });
 
 var app = builder.Build();

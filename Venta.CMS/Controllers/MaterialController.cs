@@ -9,15 +9,17 @@ namespace Venta.CMS.Controllers
 {
     public class MaterialController : Controller
     {
-        private readonly IServiceMaterial _serviceMaterial;
+        private readonly IMaterialService _serviceMaterial;
+        private readonly IUserService _userService;
 
-        public MaterialController(IServiceMaterial serviceMaterial)
+        public MaterialController(IMaterialService serviceMaterial, IUserService userService)
         {
             _serviceMaterial = serviceMaterial;
+            _userService = userService;
         }
 
         public IActionResult Index()
-        {
+        {            
             return View();
         }
 
@@ -39,6 +41,7 @@ namespace Venta.CMS.Controllers
                 return View(modelo);
             }
 
+            modelo.CreatedBy = _userService.GetUserName();
             await _serviceMaterial.Create(modelo);
 
             TempData["SuccessMessage"] = "Registro exitoso";
@@ -63,8 +66,10 @@ namespace Venta.CMS.Controllers
                 UnitQuantity = entity.UnitQuantity,
                 UnitMeasurement = entity.UnitMeasurement,
                 Stock = entity.Stock,
+                CreatedBy = entity.CreateBy,
+                CreationDate = entity.CreationDate,
                 ModifiedBy = entity.ModifiedBy,
-                ModificationDate = DateTime.UtcNow
+                ModificationDate = entity.ModificationDate
             };
 
             return View(modelo);
@@ -83,6 +88,7 @@ namespace Venta.CMS.Controllers
                 return View(modelo);
             }
 
+            modelo.ModifiedBy = _userService.GetUserName();
             await _serviceMaterial.Update(modelo);
 
             TempData["SuccessMessage"] = "Actualización exitoso";
@@ -96,7 +102,8 @@ namespace Venta.CMS.Controllers
 
             if(entity is null) return NotFound();
 
-            await _serviceMaterial.Delete(id, "");
+            var userName = _userService.GetUserName();
+            await _serviceMaterial.Delete(id, userName);
 
             return RedirectToAction("Index");
         }

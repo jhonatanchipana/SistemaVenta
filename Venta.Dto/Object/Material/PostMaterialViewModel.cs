@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Venta.Dto.Object.Material
 {
     /// <summary>
-    /// Representa el View Model para el registro Material
+    /// Representa el View Model para el registro y actualización Material
     /// </summary>
     public class PostMaterialViewModel
     {
@@ -54,7 +54,7 @@ namespace Venta.Dto.Object.Material
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Unidad de Medida")]
-        public int UnitMeasurement { get; set; }
+        public UnitMeasurementType UnitMeasurement { get; set; }
 
         /// <summary>
         /// Stock del material

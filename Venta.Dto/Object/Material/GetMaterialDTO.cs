@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaVenta.Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 namespace Venta.Dto.Object.Material
 {
     /// <summary>
-    /// Representa el ViewModel para representa el Material
+    /// Representa el DTO para el obtener Material
     /// </summary>
     public class GetMaterialDTO
     {
@@ -39,7 +40,7 @@ namespace Venta.Dto.Object.Material
         /// <summary>
         /// Unidad de medidad del material
         /// </summary>
-        public int UnitMeasurement { get; set; }
+        public UnitMeasurementType UnitMeasurement { get; set; }
 
         /// <summary>
         /// Stock del material
