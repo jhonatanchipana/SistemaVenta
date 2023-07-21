@@ -1,0 +1,91 @@
+﻿@using SistemaVenta.Entities.Enums;
+@using Venta.Dto.Object.Activity;
+@model PostActivityViewModel
+
+@{
+    ViewData["Title"] = "Crear Campaña";
+
+    var listPurchase =  Model.PurchaseBuyDate;
+    var comboPurchase = new List<SelectListItem>()
+    {
+        new SelectListItem()
+        {
+            Value = string.Empty,
+            Text = "Seleccionar una opción"
+        }
+    };
+
+    comboPurchase.AddRange(listPurchase);
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Actividades/</span> Registrar</h4>
+
+    <!-- Basic Layout & Basic with Icons -->
+    <div class="row">
+        <!-- Basic Layout -->
+        <div class="col-xxl">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Actividad</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" id="form">
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="Name"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Ingrese el nombre de la campaña" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="PurchaseId"></label>
+                            <div class="col-sm-10">
+                                <select asp-for="PurchaseId"
+                                        asp-items="comboPurchase"
+                                        class="form-control"></select>
+                                <span asp-validation-for="PurchaseId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="InitialDate"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="InitialDate"
+                                       type="date"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY" />
+                                <span asp-validation-for="InitialDate" class="text-danger"></span>
+                            </div>
+                        </div>                        
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="EndDate"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="EndDate"
+                                       type="date"
+                                       class="form-control"
+                                       placeholder="DD/MM/YYYY" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary" id="btn-post">Registrar</button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/campaign/post.js" asp-append-version="true"></script>
+
+}

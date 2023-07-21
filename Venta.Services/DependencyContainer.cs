@@ -18,8 +18,15 @@ namespace Venta.Services
         {
             services.AddScoped<IMaterialService, MaterialService>();
             services.AddScoped<IPurchaseService, PurchaseService>();
+            services.AddScoped<IClothingService, ClothingService>();
+            services.AddScoped<IManufacturingService, ManufacturingService>();
+            services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserStore<UserDTO>, UsersStore>();
+            services.AddScoped<IClothingCategoryService, ClothingCategoryService>();
+            services.AddScoped<ISalesService, SalesService>();
+            services.AddScoped<ISizeService, SizeService>();
+            services.AddScoped<IClothingSizeService, ClothingSizeService>();
 
             return services;
         }

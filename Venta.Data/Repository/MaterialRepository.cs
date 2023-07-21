@@ -45,6 +45,19 @@ namespace Venta.Data.Repository
             return (records, totalRows);
         }
 
+        public async Task<IEnumerable<Material>> GetAll(string filter, int limit, int[] ignoreIds)
+        {
+            var records = (from a in _context.Material
+                           where a.DeletionDate == null
+                             && a.IsActive
+                             && !ignoreIds.Contains(a.Id)
+                             && (string.IsNullOrEmpty(filter) || a.Name.ToUpper().Contains(filter.ToUpper()))
+                           orderby a.Name descending
+                           select a);
+
+            return await records.Take(limit).ToListAsync();
+        }
+
         public void Add(Material entity)
         {
             _context.Add(entity);
@@ -60,6 +73,13 @@ namespace Venta.Data.Repository
             _context.Update(entity);
         }
 
+        public async Task<bool> MaterialInUse(int id)
+        {
+            var existsPurchase = await _context.PurchaseMaterial.Where(x => x.DeletionDate == null && x.MaterialId == id).AnyAsync();
+            var existsClothing = await _context.ClothingMaterial.Where(x => x.DeletionDate == null && x.MaterialId == id).AnyAsync();
 
+            return existsPurchase || existsClothing;
+
+        }
     }
 }

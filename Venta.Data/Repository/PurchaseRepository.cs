@@ -35,6 +35,18 @@ namespace Venta.Data.Repository
             return (records, totalRows);
         }
 
+        public async Task<IEnumerable<Purchase>> GetAllByBuyDate(string filter, int limit)
+        {
+            var records = (from a in _context.Purchase
+                           where a.DeletionDate == null
+                             && a.IsActive
+                             && (string.IsNullOrEmpty(filter) || a.BuyDate.ToString().Contains(filter.ToUpper()))
+                           orderby a.BuyDate descending
+                           select a);
+
+            return await records.Take(limit).ToListAsync();
+        }
+
         public void Add(Purchase entity)
         {
             _context.Add(entity);

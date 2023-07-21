@@ -71,7 +71,8 @@
                             <input asp-for="Email"
                                    class="form-control"
                                    placeholder="Ingrese su correo electrónico"
-                                   autofocus />
+                                   autofocus 
+                                   value="admin@hotmail.com" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="mb-3 form-password-toggle">                            
@@ -80,7 +81,8 @@
                                 <input asp-for="Password"
                                        class="form-control"
                                        placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                       aria-describedby="password" />
+                                       aria-describedby="password" 
+                                       value="Welcome20_" />
                                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                             <span asp-validation-for="Password" class="text-danger"></span>

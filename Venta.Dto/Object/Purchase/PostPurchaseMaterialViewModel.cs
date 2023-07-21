@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,13 +14,14 @@ namespace Venta.Dto.Object.Purchase
     public class PostPurchaseMaterialViewModel
     {
         /// <summary>
-        /// Identificador de la entidad
+        /// Identificador
         /// </summary>
-        public int Id { get; set; } 
+        public int Id { get; set; }
 
         /// <summary>
         /// Id del Material comprado
         /// </summary>
+        [Required(ErrorMessage = "El campo Material es requerido")]
         public int MaterialId { get; set; }
 
         /// <summary>
@@ -33,15 +35,15 @@ namespace Venta.Dto.Object.Purchase
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [RegularExpression("(^[0-9]+$)", ErrorMessage = "Debe ingresar solo nùmeros")]
         [Display(Name = "Cantidad")]
-        public int? Quantity { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// Precio del Material
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [RegularExpression("(^[0-9.]+$)", ErrorMessage = "Debe ingresar solo nùmeros")]
-        [Display(Name = "Precio")]
-        public decimal? Price { get; set; }
+        [Display(Name = "Precio / Unidad")]
+        public decimal PriceUnit { get; set; }
 
         /// <summary>
         /// Usuario quien creo el registro
@@ -61,7 +63,6 @@ namespace Venta.Dto.Object.Purchase
         /// <summary>
         /// Ultima fecha de modificacion
         /// </summary>
-        public DateTime? ModificationDate { get; set; }
-
+        public DateTime? ModificationDate { get; set; }        
     }
 }

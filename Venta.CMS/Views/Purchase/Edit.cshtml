@@ -1,2 +1,128 @@
-﻿@{
+﻿@using Venta.Dto.Object.Purchase;
+@model PostPurchaseViewModel
+
+@{
+    ViewData["Title"] = "Actualizar Compra de Materiales";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Compra Materiales/</span> Actualizar</h4>
+
+    <!-- Basic Layout & Basic with Icons -->
+    <div class="row">
+        <!-- Basic Layout -->
+        <div class="col-xxl">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Compra Materiales</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" id="form">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="BuyDate"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="BuyDate" type="date" class="form-control" placeholder="DD/MM/YYYY" />
+                                <span asp-validation-for="BuyDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="NameBuyer"></label>
+                            <div class="col-sm-10">
+                                <input asp-for="NameBuyer" class="form-control" placeholder="Ingrese el nombre del comprador" />
+                                <span asp-validation-for="NameBuyer" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-12 text-center">
+                                <button class="btn btn-primary" type="button" id="addInputButton">+</button>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <table class="table" id="tablePurchaseMaterial">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-5">#</th>
+                                            <th class="w-35">Material</th>
+                                            <th class="w-25">Cantidad</th>
+                                            <th class="w-25">Precio</th>
+                                            <th class="w-10 text-center">Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (var i = 0; i < Model.PostBuyMaterialDetail.Count(); i++)
+                                        {
+                                            <tr>
+                                                <td>                                                    
+                                                    @(i + 1)
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" asp-for="PostBuyMaterialDetail[i].Id" value="@Model.PostBuyMaterialDetail[i].Id">
+                                                    <input type="hidden" asp-for="PostBuyMaterialDetail[i].MaterialId" value="@Model.PostBuyMaterialDetail[i].MaterialId">
+                                                    <input type="hidden" asp-for="PostBuyMaterialDetail[i].MaterialName" value="@Model.PostBuyMaterialDetail[i].MaterialName">
+                                                    <input class="form-control" name="Material_@i" disabled="@(Model.PostBuyMaterialDetail[i].Id == 0 ? "false" : "true")"
+                                                       value="@Model.PostBuyMaterialDetail[i].MaterialName">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" asp-for="PostBuyMaterialDetail[i].Quantity" value="@Model.PostBuyMaterialDetail[i].Quantity" />
+                                                    <span asp-validation-for="PostBuyMaterialDetail[i].Quantity" class="text-danger"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" asp-for="PostBuyMaterialDetail[i].PriceUnit" value="@Model.PostBuyMaterialDetail[i].PriceUnit" />
+                                                    <span asp-validation-for="PostBuyMaterialDetail[i].PriceUnit" class="text-danger"></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <a style="cursor: pointer" class="deleteMaterial" id="deleteIndex_@i" data-materialid="@Model.PostBuyMaterialDetail[i].MaterialId">X</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-center mt-3">
+                                    <input type="hidden" value="" name="PostBuyMaterialDetailCount" class="form-control" data-rule-countMaterial="true" />
+                                    <span data-valmsg-for="PostBuyMaterialDetailCount" data-valmsg-replace="true" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row justify-content-end">
+                            <div class="col-sm-10 text-end">
+                                <button type="submit" class="btn btn-primary" id="btn-post">Actualizar</button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        const urlAutocompleteMaterial = '@Url.Action("Autocomplete","Material")';
+        let addInputButton = $('#addInputButton');
+        let table = $('#tablePurchaseMaterial');
+        let tableBody = $('#tablePurchaseMaterial tbody');
+        let count = @Model.PostBuyMaterialDetail.Count();
+        let idAutocompleteSelect = [@(String.Join(",",Model.PostBuyMaterialDetail.Select(x => x.MaterialId).ToList()))];
+
+    </script>
+
+    <script src="~/js/purchase/post.js" asp-append-version="true"></script>
+
 }

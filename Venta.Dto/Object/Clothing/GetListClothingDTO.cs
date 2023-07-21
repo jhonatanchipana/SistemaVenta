@@ -49,11 +49,6 @@ namespace Venta.Dto.Object.Clothing
         public int Stock { get; set; }
 
         /// <summary>
-        /// Talla de la ropa
-        /// </summary>
-        public ClothingSizeType Size { get; set; }
-
-        /// <summary>
         /// Inversion por la ropa (unidad)
         /// </summary>
         public decimal InvestmentUnit { get; set; }

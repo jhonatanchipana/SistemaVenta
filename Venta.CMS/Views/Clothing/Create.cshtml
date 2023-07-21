@@ -1,0 +1,164 @@
+﻿@using SistemaVenta.Entities.Enums;
+@using Venta.Dto.Object.Clothing;
+@model PostClothingViewModel
+
+@{
+    ViewData["Title"] = "Registrar Prenda";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Prendas/</span> Registrar</h4>
+
+    <!-- Basic Layout & Basic with Icons -->
+    <div class="row">
+        <!-- Basic Layout -->
+        <div class="col-xxl">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Prenda</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" id="form">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="Name"></label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="Name" class="form-control" placeholder="Ingrese el nombre de la prenda" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="Description"></label>
+                                    <div class="col-sm-9">
+                                        <textarea asp-for="Description" class="form-control" placeholder="Ingrese la descripciòn" rows="4"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="Stock"></label>
+                                    <div class="col-sm-9">
+                                        <input disabled asp-for="Stock" class="form-control" placeholder="0" value="0"/>
+                                        <span asp-validation-for="Stock" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="PriceSuggested"></label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="PriceSuggested" class="form-control" placeholder="0.00" value=""/>
+                                        <span asp-validation-for="PriceSuggested" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="ClothingCategoryId"></label>
+                                    <div class="col-sm-9">
+                                        <select asp-for="ClothingCategoryId" class="form-control" asp-items="Model.ClothingCategories"></select>
+                                        <span asp-validation-for="ClothingCategoryId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-sm-3 col-form-label" asp-for="SizeIds" ></label>
+                                    <div class="col-sm-9">
+                                        <select asp-for="SizeIds" class="form-control d-none" asp-items="Model.Sizes" multiple></select>
+                                        <select id="SizeShow" class="form-control" asp-items="Model.Sizes" multiple></select>
+                                        <span asp-validation-for="SizeIds" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-12 text-center">
+                                <button class="btn btn-primary" type="button" id="addInputButton">+</button>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <table class="table" id="tableClothingMaterial">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">#</th>
+                                            <th style="width:40%">Material</th>
+                                            <th style="width:30%">Cantidad/Uso</th>
+                                            <th class="text-center" style="width:15%">Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (var i = 0; i < Model.PostClothingMaterial.Count(); i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(i + 1)
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].Id" value="@Model.PostClothingMaterial.ToList()[i].Id">
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].MaterialId" value="@Model.PostClothingMaterial.ToList()[i].MaterialId">
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].MaterialName" value="@Model.PostClothingMaterial.ToList()[i].MaterialName">
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].Cost" value="@Model.PostClothingMaterial.ToList()[i].Cost">
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].UnitQuantity" value="@Model.PostClothingMaterial.ToList()[i].UnitQuantity">
+                                                    <input type="hidden" asp-for="PostClothingMaterial[i].UnitMeasurement" value="@Model.PostClothingMaterial.ToList()[i].UnitMeasurement" />
+
+                                                    <input class="form-control" name="Material_@i" disabled="@(Model.PostClothingMaterial.ToList()[i].Id == 0 ? "false" : "true")"
+                                                    value="@Model.PostClothingMaterial.ToList()[i].MaterialName">
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <input type="text" style="width:80%" class="form-control" asp-for="PostClothingMaterial[i].Quantity" value="@Model.PostClothingMaterial.ToList()[i].Quantity" />
+                                                        <label id="labelQuantity_[@i]" class="m-auto p-2">@Model.PostClothingMaterial.ToList()[i].UnitMeasurement</label>
+                                                    </div>                                                    
+                                                    <span asp-validation-for="PostClothingMaterial[i].Quantity" class="text-danger"></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <a style="cursor: pointer" class="deleteMaterial" id="deleteIndex_@i" data-materialid="@Model.PostClothingMaterial[i].MaterialId">X</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-center mt-3">
+                                    <input type="hidden" value="" name="PostClothingMaterialCount" class="form-control" data-rule-countMaterial="true" />
+                                    <span data-valmsg-for="PostClothingMaterialCount" data-valmsg-replace="true" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row justify-content-end">
+                            <div class="col-sm-10 text-end">
+                                <button type="submit" class="btn btn-primary" id="btn-post">Registrar</button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        const urlAutocompleteMaterial = '@Url.Action("Autocomplete","Material")';
+        let addInputButton = $('#addInputButton');
+        let table = $('#tableClothingMaterial');
+        let tableBody = $('#tableClothingMaterial tbody');
+        let count = @Model.PostClothingMaterial.Count();
+        let idAutocompleteSelect = [];
+        let sizeInitial = [];
+    </script>
+
+    <script src="~/js/clothing/post.js" asp-append-version="true"></script>
+
+    
+}

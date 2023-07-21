@@ -27,7 +27,7 @@ builder.Services.AddApplicationDependencies(builder.Configuration);
 // Add services to the container.
 builder.Services.AddControllersWithViews(opciones =>
 {
-    opciones.Filters.Add(new AuthorizeFilter(politicaUsuariosAutenticados));
+    //opciones.Filters.Add(new AuthorizeFilter(politicaUsuariosAutenticados));
 });
 
 builder.Services.AddDbContext<ApplicationContext>(opciones =>

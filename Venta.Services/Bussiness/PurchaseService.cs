@@ -2,17 +2,20 @@
 using SistemaVenta.Entities;
 using Venta.Data.Interfaces;
 using Venta.Dto.Object.Material;
-using Venta.Dto.Object;
 using Venta.Services.Interface;
 using Venta.Dto.Object.Purchase;
 using System.Linq;
+using Venta.Dto.Object.Cross;
+using Venta.Dto.Object.Others;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Venta.Services.Bussiness
 {
     public class PurchaseService : IPurchaseService
     {
-        private readonly IPurchaseRepository _buyMaterialRepository;
-        private readonly IPurchaseMaterialRepository _buyMaterialDetailRepository;
+        private readonly IPurchaseRepository _purchaseRepository;
+        private readonly IPurchaseMaterialRepository _purchaseMaterialRepository;
+        private readonly IMaterialRepository _materialRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public PurchaseService(IPurchaseRepository buyMaterialRepository,
@@ -20,8 +23,9 @@ namespace Venta.Services.Bussiness
             IMaterialRepository materialRepository,
             IUnitOfWork unitOfWork)
         {
-            _buyMaterialRepository = buyMaterialRepository;
-            _buyMaterialDetailRepository = buyMaterialDetailRepository;
+            _purchaseRepository = buyMaterialRepository;
+            _purchaseMaterialRepository = buyMaterialDetailRepository;
+            _materialRepository = materialRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -29,7 +33,7 @@ namespace Venta.Services.Bussiness
         {
             try
             {
-                var tuple = await _buyMaterialRepository.GetAll(filter, isActive, offset, limit, sortBy, orderBy);
+                var tuple = await _purchaseRepository.GetAll(filter, isActive, offset, limit, sortBy, orderBy);
 
                 var records = tuple.Item1
                             .Select(a => new GetListPurchaseDTO
@@ -45,7 +49,7 @@ namespace Venta.Services.Bussiness
                                 ModificationDate = a.ModificationDate,
                                 IsActive = a.IsActive,
                                 DeletionDate = a.DeletionDate
-                            }).ToList();
+                            });
 
                 var result = new ResultsDTO<GetListPurchaseDTO>()
                 {
@@ -62,45 +66,60 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<int> Create(PostPurchaseViewModel modelo)
+        public async Task<IEnumerable<SelectListItem>> GetCombo()
+        {
+            var records = await _purchaseRepository.GetAllByBuyDate(string.Empty, Int32.MaxValue);
+            var results = records.Select(x => new SelectListItem()
+            {
+                Value = x.Id.ToString(),
+                Text = x.BuyDate.ToString("dd-MM-yyyy")
+            });
+
+            return results;
+        }
+        public async Task<int> Create(PostPurchaseViewModel model, string user)
         {
 
             try
             {
                 var entity = new Purchase()
                 {
-                    Id = modelo.Id,
-                    BuyDate = modelo.BuyDate,
-                    CostTotal = modelo.PostBuyMaterialDetail.Select(x => x.Price ?? 0).Sum(),
-                    NameBuyer = modelo.NameBuyer,
-                    QuantityMaterial = modelo.PostBuyMaterialDetail.Count(),
-                    CreateBy = modelo.CreateBy,
-                    CreationDate = modelo.CreationDate,
-                    ModifiedBy = modelo.ModifiedBy,
-                    ModificationDate = modelo.ModificationDate,
+                    Id = model.Id,
+                    BuyDate = model.BuyDate,
+                    CostTotal = model.PostBuyMaterialDetail.Select(x => x.PriceUnit * x.Quantity).Sum(),
+                    NameBuyer = model.NameBuyer,
+                    QuantityMaterial = model.PostBuyMaterialDetail.Count,
+                    CreateBy = user,
+                    CreationDate = DateTime.Now,
                     IsActive = true,
                     DeletionDate = null
                 };
 
-                _buyMaterialRepository.Add(entity);
+                _purchaseRepository.Add(entity);
 
-                foreach (var item in modelo.PostBuyMaterialDetail)
+                foreach (var item in model.PostBuyMaterialDetail)
                 {
                     var entityDetail = new PurchaseMaterial()
                     {
-                        Purchase = new Purchase() { Id = item.Id },
-                        Material = new Material() { Id = item.MaterialId },
-                        Price = item.Price ?? 0,
-                        Quantity = item.Quantity ?? 0,
-                        CreateBy = item.CreateBy,
-                        CreationDate = item.CreationDate,
-                        ModifiedBy = item.ModifiedBy,
-                        ModificationDate = item.ModificationDate,
+                        Purchase = entity,
+                        MaterialId = item.MaterialId,
+                        PriceUnit = item.PriceUnit,
+                        Quantity = item.Quantity,
+                        CreateBy = user,
+                        CreationDate = DateTime.Now,
                         IsActive = true,
-                        DeletionDate = null
+                        DeletionDate = null                     
                     };
 
-                    _buyMaterialDetailRepository.Add(entityDetail);
+                    _purchaseMaterialRepository.Add(entityDetail);
+
+                    var material = await _materialRepository.GetById(item.MaterialId);
+                    if (material is not null)
+                    {
+                        material.Stock += item.Quantity;
+                        _materialRepository.Update(material);
+                    }
+                   
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -113,70 +132,99 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<int> Update(PostPurchaseViewModel modelo)
+        public async Task<int> Update(PostPurchaseViewModel model, string user)
         {
-            var entity = await _buyMaterialRepository.GetById(modelo.Id);
+            var entity = await _purchaseRepository.GetById(model.Id);
             if (entity == null) throw new Exception("La Compra de Material no existe");
 
             try
             {
-                entity.Id = modelo.Id;
-                entity.BuyDate = modelo.BuyDate;
-                entity.CostTotal = modelo.PostBuyMaterialDetail.Select(x => x.Price ?? 0).Sum();
-                entity.NameBuyer = modelo.NameBuyer;
-                entity.QuantityMaterial = modelo.PostBuyMaterialDetail.Count();
-                entity.ModifiedBy = modelo.ModifiedBy;
-                entity.ModificationDate = DateTime.UtcNow;
+                entity.Id = model.Id;
+                entity.BuyDate = model.BuyDate;
+                entity.CostTotal = model.PostBuyMaterialDetail.Select(x => x.PriceUnit).Sum();
+                entity.NameBuyer = model.NameBuyer;
+                entity.QuantityMaterial = model.PostBuyMaterialDetail.Count;
+                entity.ModifiedBy = user;
+                entity.ModificationDate = DateTime.Now;
 
-                _buyMaterialRepository.Update(entity);
+                _purchaseRepository.Update(entity);
 
-                var entityDetail = await _buyMaterialDetailRepository.GetAllByBuyMaterialId(entity.Id);
+                var entityDetail = await _purchaseMaterialRepository.GetAllByBuyMaterialId(entity.Id);
 
                 var entityDetailDelete = entityDetail
-                                            .Where(x => !modelo.PostBuyMaterialDetail
+                                            .Where(x => !model.PostBuyMaterialDetail
                                                                     .Select(y => y.Id)
                                                                     .Contains(x.Id))
                                             .ToList();
 
                 var entityDetailUpdate = entityDetail
-                                            .Where(x => modelo.PostBuyMaterialDetail
+                                            .Where(x => model.PostBuyMaterialDetail
                                                                     .Select(y => y.Id)
                                                                     .Contains(x.Id))
                                             .ToList();
 
-                var entityDetailNew = modelo.PostBuyMaterialDetail.Where(x => x.Id == 0).ToList();
+                var entityDetailNew = model.PostBuyMaterialDetail.Where(x => x.Id == 0).ToList();
 
                 foreach (var item in entityDetailDelete)
                 {
-                    item.DeletionDate = DateTime.UtcNow;
+                    item.DeletionDate = DateTime.Now;
+
+                    _purchaseMaterialRepository.Update(item);
+
+                    var material = await _materialRepository.GetById(item.MaterialId);
+                    if (material is not null)
+                    {
+                        material.Stock -= item.Quantity;
+                        _materialRepository.Update(material);
+                    }
                 }
 
                 foreach (var item in entityDetailUpdate)
                 {
-                    item.Price = item.Price;
-                    item.Quantity = item.Quantity;
-                    item.ModifiedBy = item.ModifiedBy;
-                    item.ModificationDate = item.ModificationDate;
+                    var modelDetailUpdate = model.PostBuyMaterialDetail.Where(x => x.Id == item.Id).FirstOrDefault();
+                    
+                    if (modelDetailUpdate is not null)
+                    {
+                        var quantityActual = item.Quantity;
+                        item.PriceUnit = modelDetailUpdate.PriceUnit;
+                        item.Quantity = modelDetailUpdate.Quantity;
+                        item.ModifiedBy = user;
+                        item.ModificationDate = DateTime.Now;
+
+                        _purchaseMaterialRepository.Update(item);
+
+                        var material = await _materialRepository.GetById(item.MaterialId);
+                        if (material is not null)
+                        {
+                            material.Stock = material.Stock + modelDetailUpdate.Quantity - quantityActual;
+                            _materialRepository.Update(material);
+                        }
+                    }
+                    
                 }
 
                 foreach (var item in entityDetailNew)
                 {
-
                     var buyMaterialDetail = new PurchaseMaterial()
                     {
-                        Purchase = new Purchase() { Id = item.Id },
-                        Material = new Material() { Id = item.MaterialId },
-                        Price = item.Price ?? 0,
-                        Quantity = item.Quantity ?? 0,
-                        CreateBy = item.CreateBy,
-                        CreationDate = item.CreationDate,
-                        ModifiedBy = item.ModifiedBy,
-                        ModificationDate = item.ModificationDate,
+                        Purchase = entity,
+                        MaterialId = item.MaterialId,
+                        PriceUnit = item.PriceUnit,
+                        Quantity = item.Quantity,
+                        CreateBy = user,
+                        CreationDate = DateTime.Now,
                         IsActive = true,
                         DeletionDate = null
                     };
 
-                    _buyMaterialDetailRepository.Add(buyMaterialDetail);
+                    _purchaseMaterialRepository.Add(buyMaterialDetail);
+
+                    var material = await _materialRepository.GetById(item.MaterialId);
+                    if (material is not null)
+                    {
+                        material.Stock += item.Quantity;
+                        _materialRepository.Update(material);
+                    }
 
                 }
 
@@ -193,7 +241,7 @@ namespace Venta.Services.Bussiness
 
         public async Task<GetPurchaseDTO> GetById(int id)
         {
-            var entity = await _buyMaterialRepository.GetById(id);
+            var entity = await _purchaseRepository.GetById(id);
             if (entity == null) throw new Exception("La Compra de Material no existe");
 
             try
@@ -213,27 +261,24 @@ namespace Venta.Services.Bussiness
                     DeletionDate = entity.DeletionDate
                 };
 
-                var entityDetail = await _buyMaterialDetailRepository.GetAllByBuyMaterialId(entity.Id);
+                var entityDetail =  await _purchaseMaterialRepository.GetAllByBuyMaterialId(entity.Id);
 
-                foreach (var detail in entityDetail)
+                var materialDetail = entityDetail.Select(x => new GetPurchaseMaterialDTO()
                 {
-                    var buyMaterialDetail = new GetPurchaseMaterialDTO()
-                    {
-                        Id = detail.Id,
-                        MaterialId = detail.MaterialId,
-                        MaterialName = detail.Material?.Name ?? string.Empty,
-                        Price = detail.Price,
-                        Quantity = detail.Quantity,
-                        CreateBy = detail.CreateBy,
-                        CreationDate = detail.CreationDate,
-                        ModifiedBy = detail.ModifiedBy,
-                        ModificationDate = detail.ModificationDate,
-                        IsActive = detail.IsActive,
-                        DeletionDate = detail.DeletionDate
-                    };
+                    Id = x.Id,
+                    MaterialId = x.MaterialId,
+                    MaterialName = x.Material?.Name ?? string.Empty,
+                    Price = x.PriceUnit,
+                    Quantity = x.Quantity,
+                    CreateBy = x.CreateBy,
+                    CreationDate = x.CreationDate,                                      
+                    ModifiedBy = x.ModifiedBy,
+                    ModificationDate = x.ModificationDate,
+                    IsActive = x.IsActive,
+                    DeletionDate = x.DeletionDate,
+                }).ToList();
 
-                    material.BuyMaterialDetailDTO.ToList().Add(buyMaterialDetail);
-                }
+                material.BuyMaterialDetailDTO = materialDetail;
 
                 return material;
 
@@ -246,16 +291,16 @@ namespace Venta.Services.Bussiness
 
         public async Task ChangeStatus(int id, bool isActive, string user)
         {
-            var entity = await _buyMaterialRepository.GetById(id);
+            var entity = await _purchaseRepository.GetById(id);
             if (entity == null) throw new Exception("La Compra de Material no existe");
 
             try
             {
                 entity.IsActive = isActive;
                 entity.ModifiedBy = user;
-                entity.ModificationDate = DateTime.UtcNow;
+                entity.ModificationDate = DateTime.Now;
 
-                _buyMaterialRepository.Update(entity);
+                _purchaseRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -266,14 +311,30 @@ namespace Venta.Services.Bussiness
 
         public async Task Delete(int id, string user)
         {
-            var entity = await _buyMaterialRepository.GetById(id);
+            var entity = await _purchaseRepository.GetById(id);
             if (entity == null) throw new Exception("La Compra de Material no existe");
 
             try
             {
-                entity.DeletionDate = DateTime.UtcNow;
+                entity.DeletionDate = DateTime.Now;
 
-                _buyMaterialRepository.Update(entity);
+                _purchaseRepository.Update(entity);
+
+                var entityDetail = await _purchaseMaterialRepository.GetAllByBuyMaterialId(entity.Id);
+
+                foreach (var item in entityDetail)
+                {
+                    item.DeletionDate = DateTime.Now;
+                    _purchaseMaterialRepository.Update(item);
+
+                    var material = await _materialRepository.GetById(item.MaterialId);
+                    if (material is not null)
+                    {
+                        material.Stock -= item.Quantity;
+                        _materialRepository.Update(material);
+                    }
+                }
+
                 await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)

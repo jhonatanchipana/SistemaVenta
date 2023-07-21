@@ -1,0 +1,27 @@
+﻿@using SistemaVenta.Entities.Enums;
+@using Venta.Dto.Object.Manufacturing;
+@model PostManufacturingViewModel
+
+@{
+    ViewData["Title"] = "Registrar Fabricación de Prenda";
+}
+
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        const urlAutocompleteAutofacturing = '@Url.Action("Autocomplete","Material")';
+        let addInputButton = $('#addInputButton');
+        let table = $('#tableManufacturingClothing');
+        let tableBody = $('#tableManufacturingClothing tbody');
+        let count = @Model.PostManufacturingClothings.Count();
+
+    </script>
+
+    <script src="~/js/manufacturing/post.js" asp-append-version="true"></script>
+
+}

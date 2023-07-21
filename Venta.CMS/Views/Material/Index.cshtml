@@ -41,10 +41,10 @@
         const UrlBase = '@Url.Action("GetList")';
         const UrlUpdate = '@Url.Action("Edit")';
         const UrlDelete = '@Url.Action("Delete")';
+        const UrlChangeStatus = '@Url.Action("ChangeStatus")';
         let $tableMain = $('#table-material');
     </script>
     <script src="~/js/material/index.js" asp-append-version="true"></script>
-    <script src="~/js/material/delete.js" asp-append-version="true"></script>
     <script>
         var successMessage = '@TempData["SuccessMessage"]';
         if (successMessage !== '') {

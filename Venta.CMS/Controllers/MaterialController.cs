@@ -35,14 +35,14 @@ namespace Venta.CMS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(PostMaterialViewModel modelo) 
+        public async Task<IActionResult> Create(PostMaterialViewModel model) 
         {
             if (!ModelState.IsValid) {
-                return View(modelo);
+                return View(model);
             }
 
-            modelo.CreatedBy = _userService.GetUserName();
-            await _serviceMaterial.Create(modelo);
+            var userName = _userService.GetUserName();
+            await _serviceMaterial.Create(model , userName);
 
             TempData["SuccessMessage"] = "Registro exitoso";
             return RedirectToAction("Index");
@@ -57,7 +57,7 @@ namespace Venta.CMS.Controllers
                 return NotFound();
             }
 
-            var modelo = new PostMaterialViewModel()
+            var model = new PostMaterialViewModel()
             {
                 Id = entity.Id,
                 Name = entity.Name,
@@ -72,40 +72,56 @@ namespace Venta.CMS.Controllers
                 ModificationDate = entity.ModificationDate
             };
 
-            return View(modelo);
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, PostMaterialViewModel modelo)
+        public async Task<IActionResult> Edit(int id, PostMaterialViewModel model)
         {
-            if (id != modelo.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                return View(modelo);
+                return View(model);
             }
 
-            modelo.ModifiedBy = _userService.GetUserName();
-            await _serviceMaterial.Update(modelo);
+            var userName = _userService.GetUserName();
+            await _serviceMaterial.Update(model, userName);
 
             TempData["SuccessMessage"] = "Actualización exitoso";
             return RedirectToAction("Index");
         }
 
         [HttpPut]
+        public async Task<IActionResult> ChangeStatus([FromQuery]int id, [FromQuery] bool isActive)
+        {
+            var userName = _userService.GetUserName();
+            await _serviceMaterial.ChangeStatus(id, isActive, userName);
+
+            return Json(id);
+        }
+
+        [HttpPut]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _serviceMaterial.GetById(id);
+            var materialInUse = await _serviceMaterial.ValidateMaterialInUse(id);
 
-            if(entity is null) return NotFound();
+            if (materialInUse) return Unauthorized("No se puede eliminar");
 
             var userName = _userService.GetUserName();
             await _serviceMaterial.Delete(id, userName);
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Autocomplete(string filter, int limit, int[] ignoreId)
+        {
+            var results = await _serviceMaterial.GetAutocomplete(filter, limit, ignoreId);
+            return Json(results);
         }
 
     }

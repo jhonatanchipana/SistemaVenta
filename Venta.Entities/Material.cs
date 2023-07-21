@@ -36,5 +36,11 @@ namespace SistemaVenta.Entities
         /// Stock del material
         /// </summary>
         public int Stock { get; set; }
+        
+        /// <summary>
+        /// Stock x UnitQuantity
+        /// </summary>
+        public int StockUnitQuantity { get; set; }
+
     }
 }

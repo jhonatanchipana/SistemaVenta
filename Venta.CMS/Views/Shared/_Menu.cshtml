@@ -5,6 +5,10 @@
 
     var material = new[] { "/Material/Index", "/Material/Create", "/Material/Edit" };
     var buyMaterial = new[] { "/Purchase/Index", "/Purchase/Create", "/Purchase/Edit" };
+    var clothing = new[] { "/Clothing/Index", "/Clothing/Create", "/Clothing/Edit" };
+    var activity = new[] { "/Activity/Index", "/Activity/Create", "/Activity/Edit" };
+    var manufacturing = new[] { "/Manufacturing/Index", "/Manufacturing/Create", "/Manufacturing/Edit" };
+    var sales = new[] { "/Sales/Index", "/Sales/Create", "/Sales/Edit" };
     
 }
 
@@ -54,7 +58,7 @@
                     </g>
                 </svg>
             </span>
-            <span style="text-transform:uppercase" class="app-brand-text demo menu-text fw-bolder ms-2">J.M.</span>
+            <span style="text-transform:uppercase" class="app-brand-text demo menu-text fw-bolder ms-2">S.V.</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -87,43 +91,44 @@
 
         </li>
 
-        <li class="menu-item">
+        <li class="menu-item @(clothing.Contains(url) ? "active open" : string.Empty) @(manufacturing.Contains(url) ? "active open" : string.Empty)">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bxl-ok-ru"></i>
                 <div data-i18n="Layouts">Prenda</div>
             </a>
 
             <ul class="menu-sub">
-                <li class="menu-item">
-                    <a asp-controller="Clothing" asp-action="" class="menu-link">
+                <li class="menu-item @(clothing.Contains(url) ? "active" : string.Empty)">
+                    <a asp-controller="Clothing" asp-action="Index" class="menu-link">
                         <div data-i18n="Without menu">Mantenimiento de Prenda</div>
                     </a>
-                </li>
-                <li class="menu-item">
-                    <a asp-controller="Clothing" asp-action="" class="menu-link">
-                        <div data-i18n="Without navbar">Campaña</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a asp-controller="Clothing" asp-action="" class="menu-link">
+                </li>               
+                <li class="menu-item @(manufacturing.Contains(url) ? "active" : string.Empty)">
+                    <a asp-controller="Manufacturing" asp-action="Index" class="menu-link">
                         <div data-i18n="Container">Producción de Prenda</div>
                     </a>
                 </li>
             </ul>
         </li>
 
+        @*<li class="menu-item @(activity.Contains(url) ? "active " : string.Empty)">
+            <a asp-controller="Activity" asp-action="Index" class="menu-link">
+                <div data-i18n="Without navbar">Actividad</div>
+            </a>
+        </li>*@
+
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Venta</span>
         </li>
 
-        <li class="menu-item">
-            <a asp-controller="Sales" asp-action="" class="menu-link">
+        <li class="menu-item @(sales.Contains(url) ? "active open" : string.Empty)">
+            <a asp-controller="Sales" asp-action="Index" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-cart"></i>
                 <div data-i18n="Analytics">Venta</div>
             </a>
         </li>
 
-        <li class="menu-item">
+        @*<li class="menu-item ">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bxs-report"></i>
                 <div data-i18n="Account Settings">Reportes</div>
@@ -135,6 +140,6 @@
                     </a>
                 </li>
             </ul>
-        </li>
+        </li>*@
     </ul>
 </aside>

@@ -22,7 +22,7 @@ namespace Venta.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SistemaVenta.Entities.Campaign", b =>
+            modelBuilder.Entity("SistemaVenta.Entities.Activity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace Venta.Data.Migrations
                     b.Property<DateTime?>("DeletionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("date");
 
                     b.Property<DateTime>("InitialDate")
@@ -59,15 +59,20 @@ namespace Venta.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("StatusCampaignType")
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusActivityType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Campaign");
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("Activity");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entities.Clothing", b =>
@@ -93,8 +98,8 @@ namespace Venta.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("InvestmentUnit")
                         .HasPrecision(8, 2)
@@ -112,15 +117,12 @@ namespace Venta.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<decimal>("PriceSuggested")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
-
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -239,8 +241,8 @@ namespace Venta.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -254,10 +256,13 @@ namespace Venta.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(120)
-                        .HasColumnType("nvarchar(120)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StockUnitQuantity")
                         .HasColumnType("int");
 
                     b.Property<int>("UnitMeasurement")
@@ -351,7 +356,7 @@ namespace Venta.Data.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal>("PriceUnit")
                         .HasPrecision(16, 2)
                         .HasColumnType("decimal(16,2)");
 
@@ -377,9 +382,6 @@ namespace Venta.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CampaignId")
-                        .HasColumnType("int");
 
                     b.Property<string>("CreateBy")
                         .IsRequired()
@@ -418,12 +420,10 @@ namespace Venta.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CampaignId");
-
                     b.ToTable("Sales");
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entities.SalesClothing", b =>
+            modelBuilder.Entity("SistemaVenta.Entities.SalesClothingSize", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -432,6 +432,9 @@ namespace Venta.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClothingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClothingSizeId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreateBy")
@@ -445,10 +448,6 @@ namespace Venta.Data.Migrations
                     b.Property<DateTime?>("DeletionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("InvestmentUnit")
-                        .HasPrecision(8, 2)
-                        .HasColumnType("decimal(8,2)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -459,7 +458,7 @@ namespace Venta.Data.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
-                    b.Property<decimal>("PriceSold")
+                    b.Property<decimal>("PriceUnit")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
 
@@ -473,9 +472,11 @@ namespace Venta.Data.Migrations
 
                     b.HasIndex("ClothingId");
 
+                    b.HasIndex("ClothingSizeId");
+
                     b.HasIndex("SalesId");
 
-                    b.ToTable("SalesClothing");
+                    b.ToTable("SalesClothingSize");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entities.User", b =>
@@ -586,7 +587,7 @@ namespace Venta.Data.Migrations
                     b.ToTable("ClothingMaterial");
                 });
 
-            modelBuilder.Entity("Venta.Entities.ManufacturingClothing", b =>
+            modelBuilder.Entity("Venta.Entities.ClothingSize", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -595,6 +596,56 @@ namespace Venta.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClothingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreateBy")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("SizeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClothingId");
+
+                    b.HasIndex("SizeId");
+
+                    b.ToTable("ClothingSize");
+                });
+
+            modelBuilder.Entity("Venta.Entities.ManufacturingClothingSize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClothingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClothingSizeId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreateBy")
@@ -628,9 +679,64 @@ namespace Venta.Data.Migrations
 
                     b.HasIndex("ClothingId");
 
+                    b.HasIndex("ClothingSizeId");
+
                     b.HasIndex("ManufacturingId");
 
-                    b.ToTable("ManufacturingClothing");
+                    b.ToTable("ManufacturingClothingSize");
+                });
+
+            modelBuilder.Entity("Venta.Entities.Size", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreateBy")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descripción")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Size");
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entities.Activity", b =>
+                {
+                    b.HasOne("SistemaVenta.Entities.Purchase", "Purchase")
+                        .WithMany()
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Purchase");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entities.Clothing", b =>
@@ -663,24 +769,17 @@ namespace Venta.Data.Migrations
                     b.Navigation("Purchase");
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entities.Sales", b =>
-                {
-                    b.HasOne("SistemaVenta.Entities.Campaign", "Campaign")
-                        .WithMany()
-                        .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campaign");
-                });
-
-            modelBuilder.Entity("SistemaVenta.Entities.SalesClothing", b =>
+            modelBuilder.Entity("SistemaVenta.Entities.SalesClothingSize", b =>
                 {
                     b.HasOne("SistemaVenta.Entities.Clothing", "Clothing")
                         .WithMany()
                         .HasForeignKey("ClothingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Venta.Entities.ClothingSize", "ClothingSize")
+                        .WithMany()
+                        .HasForeignKey("ClothingSizeId");
 
                     b.HasOne("SistemaVenta.Entities.Sales", "Sales")
                         .WithMany()
@@ -689,6 +788,8 @@ namespace Venta.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Clothing");
+
+                    b.Navigation("ClothingSize");
 
                     b.Navigation("Sales");
                 });
@@ -712,13 +813,36 @@ namespace Venta.Data.Migrations
                     b.Navigation("Material");
                 });
 
-            modelBuilder.Entity("Venta.Entities.ManufacturingClothing", b =>
+            modelBuilder.Entity("Venta.Entities.ClothingSize", b =>
                 {
                     b.HasOne("SistemaVenta.Entities.Clothing", "Clothing")
                         .WithMany()
                         .HasForeignKey("ClothingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Venta.Entities.Size", "Size")
+                        .WithMany()
+                        .HasForeignKey("SizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Clothing");
+
+                    b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("Venta.Entities.ManufacturingClothingSize", b =>
+                {
+                    b.HasOne("SistemaVenta.Entities.Clothing", "Clothing")
+                        .WithMany()
+                        .HasForeignKey("ClothingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Venta.Entities.ClothingSize", "ClothingSize")
+                        .WithMany()
+                        .HasForeignKey("ClothingSizeId");
 
                     b.HasOne("SistemaVenta.Entities.Manufacturing", "Manufacturing")
                         .WithMany()
@@ -727,6 +851,8 @@ namespace Venta.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Clothing");
+
+                    b.Navigation("ClothingSize");
 
                     b.Navigation("Manufacturing");
                 });

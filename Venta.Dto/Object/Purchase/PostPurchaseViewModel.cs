@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Venta.Dto.Object.Purchase
     {
         /// <summary>
         /// Identificador de la entidad
-        /// </summary>
+        /// </summary>      
         public int Id { get; set; }
 
         /// <summary>
@@ -64,7 +65,12 @@ namespace Venta.Dto.Object.Purchase
         /// <summary>
         /// Listado de los materiales comprados
         /// </summary>
-        public List<PostPurchaseMaterialViewModel> PostBuyMaterialDetail { get; set; } =new List<PostPurchaseMaterialViewModel>();
+        public List<PostPurchaseMaterialViewModel> PostBuyMaterialDetail { get; set; } = new List<PostPurchaseMaterialViewModel>();
+
+        /// <summary>
+        /// Combo de categorias prenda
+        /// </summary>
+        public IEnumerable<SelectListItem> ClothingCategories { get; set; } = Enumerable.Empty<SelectListItem>();
 
     }
 }

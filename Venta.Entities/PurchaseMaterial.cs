@@ -31,8 +31,8 @@
         public int Quantity { get; set; }
 
         /// <summary>
-        /// Precio del Material
+        /// Precio del Material / Unidad
         /// </summary>
-        public decimal Price { get; set; }
+        public decimal PriceUnit { get; set; }
     }
 }

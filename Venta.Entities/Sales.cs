@@ -25,14 +25,5 @@
         /// </summary>
         public decimal Investment { get; set; }
 
-        /// <summary>
-        /// Campaña Id
-        /// </summary>
-        public int CampaignId { get; set; }
-
-        /// <summary>
-        /// Campaña
-        /// </summary>
-        public Campaign? Campaign { get; set; }
     }
 }

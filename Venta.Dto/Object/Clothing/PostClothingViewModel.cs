@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Venta.Dto.Object.Clothing
 {
@@ -24,14 +25,14 @@ namespace Venta.Dto.Object.Clothing
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Nombre")]
-        [MaxLength(150, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
+        [MaxLength(250, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Descripcion de la ropa
         /// </summary>
         [Display(Name = "Descripción")]
-        [MaxLength(250, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
+        [MaxLength(500, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
         public string? Description { get; set; }
 
         /// <summary>
@@ -49,38 +50,31 @@ namespace Venta.Dto.Object.Clothing
         public int ClothingCategoryId { get; set; }
 
         /// <summary>
+        /// Listado de la categoria de la prenda
+        /// </summary>
+        public IEnumerable<SelectListItem> ClothingCategories { get; set; } = Enumerable.Empty<SelectListItem>();
+
+        /// <summary>
         /// Stock de la ropa
         /// </summary>
-        [Required(ErrorMessage = "El campo {0} es requerido")]
-        [Display(Name = "Stock")]
         public int Stock { get; set; }
+
+        /// <summary>
+        /// Lista de Tallas
+        /// </summary>
+        public IEnumerable<SelectListItem> Sizes { get; set; } = Enumerable.Empty<SelectListItem>();
 
         /// <summary>
         /// Talla de la ropa
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Talla")]
-        public ClothingSizeType Size { get; set; }
+        public int[]? SizeIds { get; set; }
 
         /// <summary>
-        /// Usuario quien creo el registro
+        /// Listado de Materiales usados
         /// </summary>
-        public string CreateBy { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Fecha de creacion del registro
-        /// </summary>
-        public DateTime CreationDate { get; set; }
-
-        /// <summary>
-        /// Ultimo usuario quien modifico el registro
-        /// </summary>
-        public string? ModifiedBy { get; set; }
-
-        /// <summary>
-        /// Ultima fecha de modificacion
-        /// </summary>
-        public DateTime? ModificationDate { get; set; }
+        public List<PostClothingMaterialViewModel> PostClothingMaterial { get; set; } = new List<PostClothingMaterialViewModel>();
 
     }
 }

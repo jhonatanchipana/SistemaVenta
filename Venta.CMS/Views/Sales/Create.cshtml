@@ -1,0 +1,119 @@
+﻿@using SistemaVenta.Entities.Enums;
+@using Venta.Dto.Object.Sales;
+@model PostSalesViewModel
+
+@{
+    ViewData["Title"] = "Registrar Venta";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Ventas/</span> Registrar</h4>
+
+    <!-- Basic Layout & Basic with Icons -->
+    <div class="row">
+        <!-- Basic Layout -->
+        <div class="col-xxl">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Venta</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" id="form">
+                        <input type="hidden" asp-for="QuantityTotal" class="form-control"/>
+                        <div class="row mb-3">
+                           
+                            <div class="col-sm-12 text-center">
+                                <button class="btn btn-primary" type="button" id="addInputButton">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-12">
+                                <table class="table" id="tableSalesClothing">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">#</th>
+                                            <th style="width:23%">Prenda</th>
+                                            <th style="width:22%">Stock Disponible</th>
+                                            <th style="width:15%">Cantidad</th>
+                                            <th style="width:15%">Precio Vendido</th>
+                                            <th style="width:15%">Inversión/Unidad</th>
+                                            <th class="text-center" style="width:5%">Opciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>                                       
+                                        @for (var i = 0; i < Model.PostSalesClothesSize.Count(); i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(i + 1)
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" asp-for="PostSalesClothesSize[i].Id" value="@Model.PostSalesClothesSize[i].Id">
+                                                    <input type="hidden" asp-for="PostSalesClothesSize[i].ClothingId" value="@Model.PostSalesClothesSize[i].ClothingId">
+                                                    <input type="hidden" asp-for="PostSalesClothesSize[i].ClothingName" value="@Model.PostSalesClothesSize[i].ClothingName">
+                                                    <input type="hidden" asp-for="PostSalesClothesSize[i].InvestmentUnit" value="@Model.PostSalesClothesSize[i].InvestmentUnit" />
+
+                                                    <input class="form-control" name="Clothing_@i" @(Model.PostSalesClothesSize[i].Id == 0 ? "" : "disabled")
+                                                       value="@Model.PostSalesClothesSize[i].ClothingName">
+                                                </td>
+                                                <td>
+                                                    <input type="text"  class="form-control" asp-for="PostSalesClothesSize[i].Quantity" value="@Model.PostSalesClothesSize[i].Quantity" />
+                                                    <span asp-validation-for="PostSalesClothesSize[i].Quantity" class="text-danger"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" asp-for="PostSalesClothesSize[i].PriceUnit" value="@Model.PostSalesClothesSize[i].PriceUnit" />
+                                                    <span asp-validation-for="PostSalesClothesSize[i].PriceUnit" class="text-danger"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control" name="InvestmentUnitLabel_@i" value="@Model.PostSalesClothesSize[i].InvestmentUnit" disabled />
+                                                </td>
+                                                <td class="text-center">
+                                                    <a style="cursor: pointer" class="deleteClothing">X</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-center mt-3">
+                                    <input type="hidden" value="" name="PostSalesClothesSizeCount" class="form-control" data-rule-countClothing="true" />
+                                    <span data-valmsg-for="PostSalesClothesSizeCount" data-valmsg-replace="true" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row justify-content-end">
+                            <div class="col-sm-10 text-end">
+                                <button type="submit" class="btn btn-primary" id="btn-post">Registrar</button>
+                                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        const urlAutocompleteClothing = '@Url.Action("Autocomplete","ClothingSize")';
+        let addInputButton = $('#addInputButton');
+        let table = $('#tableSalesClothing');
+        let tableBody = $('#tableSalesClothing tbody');
+        let count = @Model.PostSalesClothesSize.Count();
+
+    </script>
+
+    <script src="~/js/sales/post.js" asp-append-version="true"></script>
+
+}

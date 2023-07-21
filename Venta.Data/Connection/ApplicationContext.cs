@@ -37,7 +37,7 @@ namespace Venta.Data.Connection
         /// <summary>
         /// BdSet asociado a la campaña
         /// </summary>
-        public DbSet<Campaign> Campaign { get; set; }
+        public DbSet<Activity> Activity { get; set; }
 
         /// <summary>
         /// BdSet asociado a la ropa
@@ -62,7 +62,7 @@ namespace Venta.Data.Connection
         /// <summary>
         /// BdSet asociado a la prenda de fabricacion
         /// </summary>
-        public DbSet<ManufacturingClothing> ManufacturingClothing { get; set; }
+        public DbSet<ManufacturingClothingSize> ManufacturingClothingSize { get; set; }
 
         /// <summary>
         /// BdSet asociado al modelo de la ropa
@@ -82,12 +82,22 @@ namespace Venta.Data.Connection
         /// <summary>
         /// BdSet asociado la venta de ropa detalle
         /// </summary>
-        public DbSet<SalesClothing> SalesClothing { get; set; }
+        public DbSet<SalesClothingSize> SalesClothingSize { get; set; }
 
         /// <summary>
         /// BdSet asociado al usuario
         /// </summary>
         public DbSet<User> User { get; set; }
+
+        /// <summary>
+        /// BdSet asociado a la prenda talla
+        /// </summary>
+        public DbSet<ClothingSize> ClothingSize { get; set; }
+
+        /// <summary>
+        /// BdSet asociado a la talla
+        /// </summary>
+        public DbSet<Size> Size { get; set; }
 
         /// <summary>
         /// 
@@ -126,28 +136,28 @@ namespace Venta.Data.Connection
 
             #region Configuración para la entidad PurchaseMaterial
             modelBuilder.Entity<PurchaseMaterial>()
-                .Property(a => a.Price)
+                .Property(a => a.PriceUnit)
                 .IsRequired()
                 .HasPrecision(16, 2);
             #endregion
 
-            #region Configuración para la entidad Campaign
-            modelBuilder.Entity<Campaign>()
+            #region Configuración para la entidad Activity
+            modelBuilder.Entity<Activity>()
                 .Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(120);
+                .HasMaxLength(250);
 
-            modelBuilder.Entity<Campaign>()
+            modelBuilder.Entity<Activity>()
                 .Property(a => a.InitialDate)
                 .IsRequired()
                 .HasColumnType("date");
 
-            modelBuilder.Entity<Campaign>()
+            modelBuilder.Entity<Activity>()
                .Property(a => a.EndDate)
                .HasColumnType("date");
 
-            modelBuilder.Entity<Campaign>()
-               .Property(a => a.StatusCampaignType)
+            modelBuilder.Entity<Activity>()
+               .Property(a => a.StatusActivityType)
                .IsRequired();
             #endregion
 
@@ -155,19 +165,15 @@ namespace Venta.Data.Connection
             modelBuilder.Entity<Clothing>()
                .Property(a => a.Name)
                .IsRequired()
-               .HasMaxLength(150);
+               .HasMaxLength(250);
 
             modelBuilder.Entity<Clothing>()
                .Property(a => a.Description)
-               .HasMaxLength(250);
+               .HasMaxLength(500);
 
             modelBuilder.Entity<Clothing>()
                .Property(a => a.PriceSuggested)
                .HasPrecision(8, 2);
-
-            modelBuilder.Entity<Clothing>()
-               .Property(a => a.Size)
-               .IsRequired();
 
             modelBuilder.Entity<Clothing>()
                .Property(a => a.InvestmentUnit)
@@ -175,6 +181,10 @@ namespace Venta.Data.Connection
             #endregion
 
             #region Configuración para la entidad ClothingMaterial
+
+            #endregion
+
+            #region Configuración para la entidad ClothingSize
 
             #endregion
 
@@ -199,6 +209,10 @@ namespace Venta.Data.Connection
 
             #endregion
 
+            #region Configuración para la entidad ManufacturingClothingSize
+            
+            #endregion
+
             #region Configuración para la entidad ClothingModel
             //modelBuilder.Entity<ClothingModel>()
             //  .Property(a => a.Name)
@@ -214,11 +228,11 @@ namespace Venta.Data.Connection
             modelBuilder.Entity<Material>()
                 .Property(a => a.Name)
                 .IsRequired()
-                .HasMaxLength(120);
+                .HasMaxLength(250);
 
             modelBuilder.Entity<Material>()
                 .Property(a => a.Description)
-                .HasMaxLength(250);
+                .HasMaxLength(500);
 
             modelBuilder.Entity<Material>()
                 .Property(a => a.Cost)
@@ -243,14 +257,18 @@ namespace Venta.Data.Connection
                 .HasPrecision(16, 2);
             #endregion
 
-            #region Configuración para la entidad ClothingMaterial
-            modelBuilder.Entity<SalesClothing>()
-               .Property(a => a.PriceSold)
-               .HasPrecision(8, 2);
+            #region Configuración para la entidad SalesClothingSize
 
-            modelBuilder.Entity<SalesClothing>()
-               .Property(a => a.InvestmentUnit)
+            #endregion
+
+            #region Configuración para la entidad ClothingMaterial
+            modelBuilder.Entity<SalesClothingSize>()
+               .Property(a => a.PriceUnit)
                .HasPrecision(8, 2);
+            #endregion
+
+            #region Configuración para la entida Size
+
             #endregion
 
             #region Configuración para la entidad user

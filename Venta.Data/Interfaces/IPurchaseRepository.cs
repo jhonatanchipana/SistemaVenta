@@ -11,6 +11,7 @@ namespace Venta.Data.Interfaces
     {
         void Add(Purchase entity);
         Task<(IEnumerable<Purchase>, int)> GetAll(string filter, bool? isActive, int offset, int limit, string sortBy, string orderBy);
+        Task<IEnumerable<Purchase>> GetAllByBuyDate(string filter, int limit);
         Task<Purchase?> GetById(int id);
         void Update(Purchase entity);
     }

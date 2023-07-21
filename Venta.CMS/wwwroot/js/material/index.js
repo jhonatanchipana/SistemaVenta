@@ -11,26 +11,44 @@ function Listado() {
     let columns = [
         {
             title: '#',
-            formatter: rowNumFormatter
+            formatter: rowNumFormatter,
+            align: 'center',
+            width: 6,
+            'widthUnit': '%'
         },
         {
             field: 'name',
-            title: 'Nombre'
+            title: 'Nombre',
+            width: 22,
+            'widthUnit': '%'
         },
         {
             field: 'cost',
             title: 'Costo',
-            sortable: true
+            sortable: true,
+            width: 18,
+            'widthUnit': '%'
         },
         {
             field: 'stock',
             title: 'Stock',
-            sortable: true
+            sortable: true,
+            width: 18,
+            'widthUnit': '%'
+        },
+        {
+            field: 'isActive',
+            title: 'Estado',
+            formatter: rowStatusFormatter,
+            width: 18,
+            'widthUnit': '%'
         },
         {
             field: 'id',
             formatter: optionsFormatter,
-            title: 'Opciones'
+            title: 'Opciones',
+            width: 18,
+            'widthUnit': '%'
         }
     ];
 
@@ -48,7 +66,7 @@ function Listado() {
         totalField: 'rows',
         columns: columns,
         sortOrder: 'desc',
-        sortName: 'CreateBy',
+        sortName: 'CreationDate',
         locale: 'es-MX',
         /*formatRecordsPerPage: function (pageNumber) {
             return pageNumber + 'registros por pagina';
@@ -67,7 +85,6 @@ function Listado() {
             };
         },
         responseHandler: function (res) {
-            console.log(res);
             return res;
         }
     });
@@ -83,9 +100,80 @@ function optionsFormatter(value, row, index) {
                         <i class="bx bx-dots-vertical-rounded"></i>
                     </button>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="${UrlUpdate}/${value}"><i class="bx bx-edit-alt me-1"></i> Editar</a>
-                        <a class="dropdown-item" href="javascript:mostrarAlert(${value})"><i class="bx bx-trash me-1"></i> Eliminar</a>
+                        <a class="dropdown-item" href="${UrlUpdate}/${value}"><i class="bx bx-edit-alt me-1" type="solid"></i> Editar</a>
+                        <a class="dropdown-item" href="#" onclick="ShowAlertChangeStatus(${index},${row.id},${row.isActive});"><i class="bx bx-edit-alt me-1"></i> Cambiar Estado</a>
+                        <a class="dropdown-item" href="javascript:showAlertDelete(${value})"><i class="bx bx-trash me-1"></i> Eliminar</a>
                      </div>
                 </div>`;
     return html;
+}
+
+async function ShowAlertChangeStatus(index, id, status) {
+    let alert = showAlert(
+        "¿Seguro que desea cambiar el estado?",
+        "¡No podra revertir esto!",
+        "Cambiar Estado",
+        "Cancelar");
+
+    alert.then((result) => {
+        if (result.isConfirmed) {
+            changeStatusRecord(index,id,status);
+            
+        }
+    })
+}
+
+async function changeStatusRecord(index, id, status) {
+
+    let params = new URLSearchParams({
+        id: id,
+        isActive: !status
+    });
+    let response = await fetch(`${UrlChangeStatus}?${params}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        alertConfirmation("Estado Cambiado", "El estado a sido cambiado");
+        var fila = $(`#table-material tr[data-index="${index}"]`);
+
+        let nameStatus = !status ? "Activado" : "Desactivado";
+        //fila.find('td:eq(4)').text(nameStatus);
+        Listado();
+    }
+
+}
+
+async function showAlertDelete(id) {
+    let alert = showAlert("¿Seguro que desea eliminar el registro?",
+        "¡No podra revertir esto!",
+        "Eliminar",
+        "Cancelar");
+
+    alert.then((result) => {
+        if (result.isConfirmed) {
+            deleteRecord(id);
+        }
+    })
+}
+
+async function deleteRecord(id) {
+    let response = await fetch(`${UrlDelete}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        alertConfirmation("Eliminado", "El registro ha sido eliminado.");
+        Listado();
+    } else {
+        if (response.status == 401) {
+            alertError("Error", "El material esta en uso, no puede ser eliminado.");
+        }
+    }
 }

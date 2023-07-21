@@ -23,14 +23,14 @@ namespace Venta.Dto.Object.Material
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Nombre")]
-        [MaxLength(120, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
+        [MaxLength(250, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Descripcion general del material
         /// </summary>
         [Display(Name = "Descripción")]
-        [MaxLength(250, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
+        [MaxLength(500, ErrorMessage = "El campo debe tener como máximo {0} caracteres")]
         public string? Description { get; set; }
 
         /// <summary>
@@ -38,6 +38,7 @@ namespace Venta.Dto.Object.Material
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Costo(Precio)")]
+        [RegularExpression("(^[0-9]+([.][0-9]+)?$)", ErrorMessage = "Debe ingresar solo nùmeros enteros o decimales")]
         public decimal Cost { get; set; }
 
         /// <summary>
@@ -46,7 +47,6 @@ namespace Venta.Dto.Object.Material
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Unidad/Cantidad")]
         [RegularExpression("(^[0-9]+$)", ErrorMessage = "Debe ingresar solo nùmeros")]
-        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessage = "Debe ingresar un valor mayor a {0}")]
         public int UnitQuantity { get; set; }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Venta.Dto.Object.Material
         /// <summary>
         /// Fecha de creación de la entidad
         /// </summary>
-        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreationDate { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Usuario que modifico la entidad

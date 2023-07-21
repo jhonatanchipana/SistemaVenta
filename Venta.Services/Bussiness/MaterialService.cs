@@ -1,20 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SistemaVenta.Entities;
+﻿using SistemaVenta.Entities;
 using SistemaVenta.Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Venta.Data.Connection;
-using Venta.Dto.Object;
 using Venta.Dto.Object.Material;
 using Venta.Services.Interface;
 using System.Linq.Dynamic.Core;
 using Venta.Data.Interfaces;
-using Venta.Data.Repository;
-using System.Security.Cryptography;
 using LaTinka.Common;
+using Venta.Dto.Object.Cross;
+using Venta.Dto.Object.Others;
 
 namespace Venta.Services.Bussiness
 {
@@ -53,7 +45,7 @@ namespace Venta.Services.Bussiness
                                 ModificationDate = a.ModificationDate,
                                 IsActive = a.IsActive,
                                 DeletionDate = a.DeletionDate
-                            }).ToList();
+                            });
 
                 var result = new ResultsDTO<GetListMaterialDTO>()
                 {
@@ -70,7 +62,7 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<int> Create(PostMaterialViewModel material)
+        public async Task<int> Create(PostMaterialViewModel material, string user)
         {
 
             try
@@ -84,8 +76,8 @@ namespace Venta.Services.Bussiness
                     UnitQuantity = material.UnitQuantity,
                     UnitMeasurement = material.UnitMeasurement,
                     Stock = material.Stock,
-                    CreateBy = material.CreatedBy,
-                    CreationDate = DateTime.UtcNow,
+                    CreateBy = user,
+                    CreationDate = DateTime.Now,
                     ModifiedBy = null,
                     ModificationDate = null,
                     IsActive = true,
@@ -104,7 +96,7 @@ namespace Venta.Services.Bussiness
 
         }
 
-        public async Task<int> Update(PostMaterialViewModel material)
+        public async Task<int> Update(PostMaterialViewModel material, string user)
         {
             var entity = await _materialRepository.GetById(material.Id);
             if (entity == null) throw new Exception("El material no existe");
@@ -119,8 +111,8 @@ namespace Venta.Services.Bussiness
                 entity.UnitQuantity = material.UnitQuantity;
                 entity.UnitMeasurement = (UnitMeasurementType)material.UnitMeasurement;
                 entity.Stock = material.Stock;
-                entity.ModifiedBy = material.ModifiedBy;
-                entity.ModificationDate = DateTime.UtcNow;
+                entity.ModifiedBy = user;
+                entity.ModificationDate = DateTime.Now;
 
                 _materialRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
@@ -176,7 +168,7 @@ namespace Venta.Services.Bussiness
             {
                 entity.IsActive = isActive;
                 entity.ModifiedBy = user;
-                entity.ModificationDate = DateTime.UtcNow;
+                entity.ModificationDate = DateTime.Now;
 
                 _materialRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
@@ -187,14 +179,26 @@ namespace Venta.Services.Bussiness
             }
         }
 
+        public async Task<bool> ValidateMaterialInUse(int id)
+        {
+            try
+            {
+                return await _materialRepository.MaterialInUse(id);                
+            }
+            catch (Exception )
+            {
+                throw new Exception("Error la validar eliminación de material");
+            }
+        }
+
         public async Task Delete(int id, string user)
         {
             var entity = await _materialRepository.GetById(id);
-            if (entity == null) throw new Exception("El material no existe");
+            if (entity == null) throw new Exception("El material no existe");          
 
             try
             {
-                entity.DeletionDate = DateTime.UtcNow;
+                entity.DeletionDate = DateTime.Now;
 
                 _materialRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
@@ -203,6 +207,31 @@ namespace Venta.Services.Bussiness
             {
                 throw new Exception("Error al eliminar el Material");
             }
+        }
+
+        public async Task<IEnumerable<ItemClothingCategoryDTO>> GetAutocomplete(string filter, int limit, int[] ignoreIds)
+        {            
+            try
+            {
+                var records = await _materialRepository.GetAll(filter, limit, ignoreIds);
+
+                var result = records.Select(x => new ItemClothingCategoryDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UnitMeasurementId = (int)x.UnitMeasurement,
+                    UnitMeasurementDescription = EnumManager.GetEnumDescription(x.UnitMeasurement),
+                    Cost = x.Cost,
+                    UnitQuantity = x.UnitQuantity
+                });
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al autocompletar el material");
+            }
+            
         }
 
     }

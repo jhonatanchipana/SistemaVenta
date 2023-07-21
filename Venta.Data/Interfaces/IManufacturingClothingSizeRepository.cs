@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Venta.Entities;
+
+namespace Venta.Data.Interfaces
+{
+    public interface IManufacturingClothingSizeRepository
+    {
+        void Add(ManufacturingClothingSize entity);
+        Task<IEnumerable<ManufacturingClothingSize>> GetAllByManufacturingId(int manufacturingId);
+        void Update(ManufacturingClothingSize entity);
+    }
+}

@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Listado de Ventas";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Ventas</h4>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            @*<div class="row gx-3 gy-2 align-items-center">
+            <div class="col-md-3">
+            <label class="form-label" for="selectTypeOpt">Filtrar</label>
+            <input class="form-control color-dropdown">
+            </div>
+            <div class="col-md-3">
+            <label class="form-label" for="showToastPlacement">&nbsp;</label>
+            <button id="showToastPlacement" class="btn btn-primary d-block">Buscar</button>
+            </div>
+            </div> *@
+            <div class="row gx-3 gy-2 my-1">
+                <div class="col-md-12 text-end">
+                    <a asp-action="Create" class="btn btn-primary">Agregar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsive Table -->
+    <div class="card">
+        <div class="table-responsive text-nowrap m-4">
+            <table class="table" id="table-sales">
+            </table>
+        </div>
+    </div>
+    <!--/ Responsive Table -->
+</div>
+
+@section Scripts{
+
+    <script>
+        const UrlBase = '@Url.Action("GetList")';
+        const UrlUpdate = '@Url.Action("Edit")';
+        const UrlDelete = '@Url.Action("Delete")';
+        let $tableMain = $('#table-sales');
+    </script>
+    <script src="~/js/sales/index.js" asp-append-version="true"></script>
+    <script>
+        var successMessage = '@TempData["SuccessMessage"]';
+        if (successMessage !== '') {
+            toastr.success(successMessage);
+        }
+    </script>
+}
