@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SistemaVenta.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -44,6 +45,21 @@ namespace Venta.Dto.Object.Purchase
         [RegularExpression("(^[0-9.]+$)", ErrorMessage = "Debe ingresar solo nùmeros")]
         [Display(Name = "Precio / Unidad")]
         public decimal PriceUnit { get; set; }
+
+        /// <summary>
+        /// Unidad / Cantidad del material
+        /// </summary>
+        public int UnitQuantity { get; set; }
+
+        /// <summary>
+        /// Unidad de Medida del material
+        /// </summary>
+        public UnitMeasurementType UnitMeasurement { get; set; }
+
+        /// <summary>
+        /// Unidad de Medida del material de compra
+        /// </summary>
+        public UnitMeasurementMaterialType UnitMeasurementMaterial { get; set; }
 
         /// <summary>
         /// Usuario quien creo el registro

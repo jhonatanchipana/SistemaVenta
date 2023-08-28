@@ -8,15 +8,21 @@ namespace SistemaVenta.Entities.Enums
     public enum UnitMeasurementType
     {
         /// <summary>
+        /// Valor asociado a Centímetro
+        /// </summary>
+        [Description("Centímetro")]
+        Centímetro = 1,
+
+        /// <summary>
         /// Valor asociado a Kilogramo
         /// </summary>
         [Description("Kilogramo")]
-        Kilogramo = 1,
+        Kilogramo = 2,
 
         /// <summary>
-        /// Valor asociado a Metro
+        /// Valor asociado a Unidad
         /// </summary>
-        [Description("Metro")]
-        Metro = 2
+        [Description("Unidad")]
+        Unidad = 3
     }
 }

@@ -1,9 +1,9 @@
 ﻿@{
-    ViewData["Title"] = "Listado de Actividades";
+    ViewData["Title"] = "Listado de Reporte Ingreso/Salida";
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4">Actividades</h4>
+    <h4 class="fw-bold py-3 mb-4">Reporte Ingreso/Salida</h4>
 
     <div class="card mb-4">
         <div class="card-body">
@@ -28,11 +28,13 @@
     <!-- Responsive Table -->
     <div class="card">
         <div class="table-responsive text-nowrap m-4">
-            <table class="table" id="table-activity">
+            <table class="table" id="table-repotInOut">
             </table>
         </div>
     </div>
     <!--/ Responsive Table -->
+
+    <partial name="_ModalInOut" />
 </div>
 
 @section Scripts{
@@ -41,9 +43,10 @@
         const UrlBase = '@Url.Action("GetList")';
         const UrlUpdate = '@Url.Action("Edit")';
         const UrlDelete = '@Url.Action("Delete")';
-        let $tableMain = $('#table-activity');
+        const URLINOUT = '@Url.Action("GetOutIn")';
+        let $tableMain = $('#table-repotInOut');
     </script>
-    <script src="~/js/activity/index.js" asp-append-version="true"></script>
+    <script src="~/js/reportInOut/index.js" asp-append-version="true"></script>
     <script>
         var successMessage = '@TempData["SuccessMessage"]';
         if (successMessage !== '') {

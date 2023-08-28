@@ -31,3 +31,7 @@ function alertError(title, text) {
 function rowStatusFormatter(value, row, index) {
     return value ? "Activado" : "Desactivado";
 }
+
+function rowMoneyFormatter(value, row, index) {
+    return `S/. ${value}`;
+}

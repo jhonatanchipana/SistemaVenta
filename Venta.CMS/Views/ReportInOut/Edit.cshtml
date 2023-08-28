@@ -1,11 +1,11 @@
 ﻿@using SistemaVenta.Entities.Enums;
-@using Venta.Dto.Object.Activity;
-@model PostActivityViewModel
+@using Venta.Dto.Object.ReportInOut;
+@model PostReportInOutViewModel
 
 @{
-    ViewData["Title"] = "Crear Campaña";
+    ViewData["Title"] = "Actualizar Reporte Ingreso/Salida";
 
-    var listPurchase =  Model.PurchaseBuyDate;
+    var listPurchase = Model.PurchaseBuyDate;
     var comboPurchase = new List<SelectListItem>()
     {
         new SelectListItem()
@@ -19,7 +19,7 @@
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Actividades/</span> Registrar</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Reporte Ingreso/Salida /</span> Actualizar</h4>
 
     <!-- Basic Layout & Basic with Icons -->
     <div class="row">
@@ -27,10 +27,10 @@
         <div class="col-xxl">
             <div class="card mb-4">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0">Actividad</h5>
+                    <h5 class="mb-0">Reporte</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-action="Create" id="form">
+                    <form asp-action="Edit" id="form">
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" asp-for="Name"></label>
                             <div class="col-sm-10">
@@ -38,7 +38,7 @@
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="row mb-3">
+                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" asp-for="PurchaseId"></label>
                             <div class="col-sm-10">
                                 <select asp-for="PurchaseId"
@@ -56,7 +56,7 @@
                                        placeholder="DD/MM/YYYY" />
                                 <span asp-validation-for="InitialDate" class="text-danger"></span>
                             </div>
-                        </div>                        
+                        </div>
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label" asp-for="EndDate"></label>
                             <div class="col-sm-10">
@@ -69,7 +69,7 @@
                         </div>
                         <div class="row justify-content-end">
                             <div class="col-sm-10">
-                                <button type="submit" class="btn btn-primary" id="btn-post">Registrar</button>
+                                <button type="submit" class="btn btn-primary" id="btn-post">Actualizar</button>
                                 <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
                             </div>
                         </div>
@@ -86,6 +86,6 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script src="~/js/campaign/post.js" asp-append-version="true"></script>
+    <script src="~/js/reportInOut/post.js" asp-append-version="true"></script>
 
 }

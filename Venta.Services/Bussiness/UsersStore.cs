@@ -30,7 +30,8 @@ namespace Venta.Services.Bussiness
         {
             var entity = await _userRepository.GetByEmailNormalized(normalizedEmail);
 
-            if (entity is null) throw new Exception("El usuario no ha sido encontrado");
+            //if (entity is null) throw new Exception("El usuario no ha sido encontrado");
+            if (entity is null) return null;
 
             try
             {
@@ -61,7 +62,8 @@ namespace Venta.Services.Bussiness
         {
             var entity = await _userRepository.GetByUserNameNormalized(normalizedUserName);
 
-            if (entity is null) throw new Exception("El usuario no ha sido encontrado");
+            //if (entity is null) throw new Exception("El usuario no ha sido encontrado");
+            if (entity is null) return null;
 
             try
             {

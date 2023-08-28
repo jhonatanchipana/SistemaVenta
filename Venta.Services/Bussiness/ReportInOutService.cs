@@ -9,31 +9,34 @@ using Venta.Data.Repository;
 using Venta.Dto.Object.Purchase;
 using Venta.Services.Interface;
 using SistemaVenta.Entities.Enums;
-using Venta.Dto.Object.Activity;
+using Venta.Dto.Object.ReportInOut;
 using Venta.Dto.Object.Cross;
 
 namespace Venta.Services.Bussiness
 {
-    public class ActivityService : IActivityService
+    public class ReportInOutService : IReportInOutService
     {
-        private readonly IActivityRepository _campaignRepository;
+        private readonly IReportInOutRepository _reportInOutRepository;
+        private readonly ISalesRepository _salesRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ActivityService(IActivityRepository campaignRepository,
+        public ReportInOutService(IReportInOutRepository reportInOutRepository,
+            ISalesRepository salesRepository,
             IUnitOfWork unitOfWork)
         {
-            _campaignRepository = campaignRepository;
+            _reportInOutRepository = reportInOutRepository;
+            _salesRepository = salesRepository;
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ResultsDTO<GetListActivityDTO>> GetAll(string filter, bool? isActive, int statusActivityType ,int offset, int limit, string sortBy, string orderBy)
+        public async Task<ResultsDTO<GetListReportInOutDTO>> GetAll(string filter, bool? isActive, int statusActivityType ,int offset, int limit, string sortBy, string orderBy)
         {
             try
             {
-                var tuple = await _campaignRepository.GetAll(filter, isActive,(StatusActivityType) statusActivityType, offset, limit, sortBy, orderBy);
+                var tuple = await _reportInOutRepository.GetAll(filter, isActive,(StatusActivityType) statusActivityType, offset, limit, sortBy, orderBy);
 
                 var records = tuple.Item1
-                            .Select(a => new GetListActivityDTO
+                            .Select(a => new GetListReportInOutDTO
                             {
                                 Id = a.Id,
                                 Name = a.Name,
@@ -48,7 +51,7 @@ namespace Venta.Services.Bussiness
                                 DeletionDate = a.DeletionDate
                             });
 
-                var result = new ResultsDTO<GetListActivityDTO>()
+                var result = new ResultsDTO<GetListReportInOutDTO>()
                 {
                     Results = records,
                     Rows = tuple.Item2
@@ -63,12 +66,12 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<int> Create(PostActivityViewModel model, string user)
+        public async Task<int> Create(PostReportInOutViewModel model, string user)
         {
 
             try
             {
-                var entity = new Activity()
+                var entity = new ReportInOut()
                 {
                     Name= model.Name,
                     InitialDate = model.InitialDate ?? DateTime.Now,
@@ -80,7 +83,7 @@ namespace Venta.Services.Bussiness
                     IsActive = true,
                 };
 
-                _campaignRepository.Add(entity);
+                _reportInOutRepository.Add(entity);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -92,9 +95,9 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<int> Update(PostActivityViewModel model, string user)
+        public async Task<int> Update(PostReportInOutViewModel model, string user)
         {
-            var entity = await _campaignRepository.GetById(model.Id);
+            var entity = await _reportInOutRepository.GetById(model.Id);
             if (entity == null) throw new Exception("La Campaña no existe");
 
             try
@@ -107,7 +110,7 @@ namespace Venta.Services.Bussiness
                 entity.ModifiedBy = user;
                 entity.ModificationDate = DateTime.Now;
 
-                _campaignRepository.Update(entity);
+                _reportInOutRepository.Update(entity);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -120,14 +123,14 @@ namespace Venta.Services.Bussiness
         }
 
 
-        public async Task<PostActivityViewModel> GetById(int id)
+        public async Task<PostReportInOutViewModel> GetById(int id)
         {
-            var entity = await _campaignRepository.GetById(id);
+            var entity = await _reportInOutRepository.GetById(id);
             if (entity == null) throw new Exception("La Campaña no existe");
 
             try
             {
-                var campaign = new PostActivityViewModel
+                var campaign = new PostReportInOutViewModel
                 {
                     Id = entity.Id,
                     Name = entity.Name,
@@ -151,7 +154,7 @@ namespace Venta.Services.Bussiness
 
         public async Task ChangeStatus(int id, bool isActive, string user)
         {
-            var entity = await _campaignRepository.GetById(id);
+            var entity = await _reportInOutRepository.GetById(id);
             if (entity == null) throw new Exception("La Campaña no existe");
 
             try
@@ -160,7 +163,7 @@ namespace Venta.Services.Bussiness
                 entity.ModifiedBy = user;
                 entity.ModificationDate = DateTime.Now;
 
-                _campaignRepository.Update(entity);
+                _reportInOutRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -171,20 +174,38 @@ namespace Venta.Services.Bussiness
 
         public async Task Delete(int id, string user)
         {
-            var entity = await _campaignRepository.GetById(id);
+            var entity = await _reportInOutRepository.GetById(id);
             if (entity == null) throw new Exception("La Campaña no existe");
 
             try
             {
                 entity.DeletionDate = DateTime.Now;
 
-                _campaignRepository.Update(entity);
+                _reportInOutRepository.Update(entity);
                 await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al eliminar la Campaña");
             }
+        }
+
+        public async Task<GetReportInOutFinalDTO> GetInOut(int id)
+        {
+            var report = await _reportInOutRepository.GetById(id);
+            var purchaseTotal = await _reportInOutRepository.GetCostTotalOfPurchase(id);
+
+            if (report is null) throw new Exception("El registro no existe");
+
+            var salesTotal = await _salesRepository.GetSaleBetweenDates(report.InitialDate.Date, report.EndDate.Date);
+
+            var result = new GetReportInOutFinalDTO()
+            {
+                PurchaseTotal = purchaseTotal,
+                SaleTotal = salesTotal
+            };
+
+            return result; 
         }
 
     }

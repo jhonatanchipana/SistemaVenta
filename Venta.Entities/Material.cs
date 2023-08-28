@@ -36,11 +36,20 @@ namespace SistemaVenta.Entities
         /// Stock del material
         /// </summary>
         public int Stock { get; set; }
-        
+
+        /// <summary>
+        /// Stock real
+        /// </summary>
+        public int StockReal { get; set; }
+
         /// <summary>
         /// Stock x UnitQuantity
         /// </summary>
         public int StockUnitQuantity { get; set; }
 
+        /// <summary>
+        /// Uniddad de medida del material (compra)
+        /// </summary>
+        public UnitMeasurementMaterialType UnitMeasurementMaterial { get; set; }
     }
 }

@@ -57,39 +57,12 @@ namespace Venta.CMS.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var entity = await _purchaseService.GetById(id);
+            var model = await _purchaseService.GetById(id);
 
-            if (entity == null)
+            if (model == null)
             {
                 return NotFound();
             }
-
-            var modelDetail = entity.BuyMaterialDetailDTO.Select(x => new PostPurchaseMaterialViewModel()
-            {
-                Id = x.Id,
-                MaterialId = x.MaterialId,
-                MaterialName = x.MaterialName,
-                PriceUnit = x.Price,
-                Quantity = x.Quantity,
-                CreateBy = x.CreateBy,
-                CreationDate = x.CreationDate,
-                ModifiedBy= x.ModifiedBy,
-                ModificationDate = x.ModificationDate,                                                        
-            }).ToList();
-
-            var model = new PostPurchaseViewModel()
-            {
-                Id = entity.Id,
-                BuyDate = entity.BuyDate,
-                CostTotal = entity.CostTotal,
-                NameBuyer = entity.NameBuyer,
-                QuantityMaterial = entity.QuantityMaterial,
-                PostBuyMaterialDetail = modelDetail,
-                CreateBy = entity.CreateBy,
-                CreationDate = entity.CreationDate,
-                ModifiedBy = entity.ModifiedBy,
-                ModificationDate = entity.ModificationDate
-            };            
 
             return View(model);
         }

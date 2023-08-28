@@ -23,18 +23,21 @@ namespace Venta.Services.Bussiness
         private readonly IManufacturingClothingSizeRepository _manufacturingClothingRepository;
         private readonly IClothingRepository _clothingRepository;
         private readonly IClothingSizeRepository _clothingSizeRepository;
+        private readonly IClothingMaterialRepository _clothingMaterialRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public ManufacturingService(IManufacturingRepository manufacturingRepository,
             IManufacturingClothingSizeRepository manufacturingClothingRepository,
             IClothingRepository clothingRepository,
             IClothingSizeRepository clothingSizeRepository,
+            IClothingMaterialRepository clothingMaterialRepository,
             IUnitOfWork unitOfWork)
         {
             _manufacturingRepository = manufacturingRepository;
             _manufacturingClothingRepository = manufacturingClothingRepository;
             _clothingRepository = clothingRepository;
             _clothingSizeRepository = clothingSizeRepository;
+            _clothingMaterialRepository = clothingMaterialRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -90,6 +93,12 @@ namespace Venta.Services.Bussiness
 
                 _manufacturingRepository.Add(entity);
 
+                var clothingSizeIds = model.PostManufacturingClothings.Select(x => x.ClothingSizeId).ToArray();
+                var clothingSizes = await _clothingSizeRepository.GetAllByIds(clothingSizeIds);
+                var clothings = model.PostManufacturingClothings
+                                        .GroupBy(x => x.ClothingId)
+                                        .ToDictionary(x => x.Key, x => x.Select(y => y.Quantity).Sum());
+
                 foreach (var item in model.PostManufacturingClothings)
                 {
                     var entityDetail = new ManufacturingClothingSize()
@@ -105,38 +114,24 @@ namespace Venta.Services.Bussiness
 
                     _manufacturingClothingRepository.Add(entityDetail);
 
-                    var clothingSize = await _clothingSizeRepository.GetById(item.ClothingSizeId);
+                    var clothingSize = clothingSizes.Where(x => x.Id == item.ClothingSizeId).FirstOrDefault();
 
                     if(clothingSize is not null)
                     {
                         clothingSize.Stock += item.Quantity;
                         clothingSize.ModifiedBy = user;
                         clothingSize.ModificationDate = DateTime.Now;
-                        _clothingSizeRepository.Update(clothingSize);
-                    }
 
+                        if(clothingSize.Clothing is not null)
+                        {
+                            clothingSize.Clothing.Stock += item.Quantity;
+                            clothingSize.Clothing.ModifiedBy = user;
+                            clothingSize.Clothing.ModificationDate = DateTime.Now;
+                        }
+                    }
                 }
 
-                var clothingIds = model.PostManufacturingClothings
-                                        .GroupBy(g => g.ClothingId)
-                                        .Select(x => new { clothingId = x.Key, quantityClothing = x.Select(x => x.Quantity).Sum() })
-                                        .Distinct()
-                                        .ToList();
-
-                foreach (var item in clothingIds)
-                {
-                    var clothing = await _clothingRepository.GetById(item.clothingId);
-
-                   if(clothing is not null )
-                    {
-                        clothing.Stock += item.quantityClothing;
-                        clothing.ModifiedBy = user;
-                        clothing.ModificationDate = DateTime.Now;
-
-                        _clothingRepository.Update(clothing);
-                    }
-
-                }
+                await UpdateAddStockMaterial(clothings);
 
                 await _unitOfWork.SaveChangesAsync();
 
@@ -145,6 +140,23 @@ namespace Venta.Services.Bussiness
             catch (Exception ex)
             {
                 throw new Exception("Error al registrar Fabricación de Prendas");
+            }
+        }
+
+        private async Task UpdateAddStockMaterial(Dictionary<int, int> clothings)
+        {
+            var ids = clothings.Select(x => x.Key).ToArray();
+            var clothingMaterials = await _clothingMaterialRepository.GetAllByClothingIds(ids);
+
+            foreach (var item in clothingMaterials)
+            {
+                var quantity = clothings.Where(x => x.Key == item.ClothingId).Select(x => x.Value).FirstOrDefault();
+
+                if (item.Material is not null)
+                {
+                    item.Material.StockReal -= item.Quantity * quantity;
+                    item.Material.Stock = item.Material.StockReal / item.Material.UnitQuantity;
+                }
             }
         }
 
@@ -164,7 +176,36 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<PostManufacturingViewModel> GetById(int id)
+        public async Task<GetManufacturingDTO> GetById(int id)
+        {
+            var entity = await _manufacturingRepository.GetById(id);
+            if (entity == null) throw new Exception("El registro no existe");
+
+            var entityDetail = await _manufacturingClothingRepository.GetAllByManufacturingIdDTO(entity.Id);
+
+            try
+            {
+                var manufacturing = new GetManufacturingDTO()
+                {
+                    Id = entity.Id,
+                    ManufacturingDate = entity.ManufacturingDate,
+                    QuantityTotal = entity.QuantityTotal,
+                    CreateBy = entity.CreateBy,
+                    CreationDate = entity.CreationDate,
+                    ModifiedBy = entity.ModifiedBy,
+                    ModificationDate = entity.ModificationDate,
+                    PostManufacturingClothings = entityDetail
+                };
+
+                return manufacturing;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener Produción de Prenda");
+            }
+        }
+
+        public async Task<PostManufacturingViewModel> GetByIdPost(int id)
         {
             var entity = await _manufacturingRepository.GetById(id);
             if (entity == null) throw new Exception("El registro no existe");
@@ -226,13 +267,11 @@ namespace Venta.Services.Bussiness
 
                 _manufacturingRepository.Update(entity);
 
-                var entityDetail = await _manufacturingClothingRepository.GetAllByManufacturingId(entity.Id);
+                var entityDetail = await _manufacturingClothingRepository.GetAllByManufacturingId(entity.Id);                
 
                 foreach (var item in entityDetail)
                 {
                     item.DeletionDate = DateTime.Now;
-
-                    _manufacturingClothingRepository.Update(item);
 
                     var clothingSize = await _clothingSizeRepository.GetById(item.ClothingSizeId ?? 0);
 
@@ -242,36 +281,43 @@ namespace Venta.Services.Bussiness
                         clothingSize.ModifiedBy = user;
                         clothingSize.ModificationDate = DateTime.Now;
 
-                        _clothingSizeRepository.Update(clothingSize);
+                        if (clothingSize.Clothing is not null)
+                        {
+                            clothingSize.Clothing.Stock -= item.Quantity;
+                            clothingSize.Clothing.ModifiedBy = user;
+                            clothingSize.Clothing.ModificationDate = DateTime.Now;
+                        }
                     }
                 }
 
-                var clothingIds = entityDetail
-                                        .GroupBy(g => g.ClothingId)
-                                        .Select(x => new { clothingId = x.Key, quantityClothing = x.Select(x => x.Quantity).Sum() })
-                                        .Distinct()
-                                        .ToList();
+                var clothings = entityDetail
+                                       .GroupBy(x => x.ClothingId)
+                                       .ToDictionary(x => x.Key, x => x.Select(y => y.Quantity).Sum());
 
-                foreach (var clothingId in clothingIds)
-                {
-                    var clothing = await _clothingRepository.GetById(clothingId.clothingId);
-
-                    if (clothing is not null)
-                    {
-                        clothing.Stock -= clothingId.quantityClothing;
-                        clothing.ModifiedBy = user;
-                        clothing.ModificationDate = DateTime.Now;
-
-                        _clothingRepository.Update(clothing);
-                    }
-
-                }
+                await UpdateRemoveStockMaterial(clothings);
 
                 await _unitOfWork.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al eliminar la Fabricación de Prenda");
+            }
+        }
+
+        private async Task UpdateRemoveStockMaterial(Dictionary<int, int> clothings)
+        {
+            var ids = clothings.Select(x => x.Key).ToArray();
+            var clothingMaterials = await _clothingMaterialRepository.GetAllByClothingIds(ids);
+
+            foreach (var item in clothingMaterials)
+            {
+                var quantity = clothings.Where(x => x.Key == item.ClothingId).Select(x => x.Value).FirstOrDefault();
+
+                if (item.Material is not null)
+                {
+                    item.Material.StockReal += item.Quantity * quantity;
+                    item.Material.Stock = item.Material.StockReal / item.Material.UnitQuantity;
+                }
             }
         }
 

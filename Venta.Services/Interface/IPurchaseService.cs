@@ -15,7 +15,7 @@ namespace Venta.Services.Interface
         Task<int> Create(PostPurchaseViewModel model, string user);
         Task Delete(int id, string user);
         Task<ResultsDTO<GetListPurchaseDTO>> GetAll(string filter, bool? isActive, int offset, int limit, string sortBy, string orderBy);
-        Task<GetPurchaseDTO> GetById(int id);
+        Task<PostPurchaseViewModel> GetById(int id);
         Task<IEnumerable<SelectListItem>> GetCombo();
         Task<int> Update(PostPurchaseViewModel model, string user);
     }

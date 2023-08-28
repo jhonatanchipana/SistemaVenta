@@ -43,6 +43,8 @@
 
 <partial name="_ModalCreateManufacturing" model="model" />
 
+<partial name="_ModalManufacturingDetail"/>
+
 @section Scripts{
     
     <script>
@@ -50,6 +52,7 @@
         const UrlBase = '@Url.Action("GetList")';
         const UrlUpdate = '@Url.Action("Edit")';
         const UrlDelete = '@Url.Action("Delete")';
+        const URLDETAIL = '@Url.Action("GetById")';
         let $tableMain = $('#table-manufacturing');
     </script>
 

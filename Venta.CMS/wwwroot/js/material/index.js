@@ -25,12 +25,14 @@ function Listado() {
         {
             field: 'cost',
             title: 'Costo',
+            formatter: rowMoneyFormatter,
             sortable: true,
             width: 18,
             'widthUnit': '%'
         },
         {
             field: 'stock',
+            formatter: rowStockFormatter,
             title: 'Stock',
             sortable: true,
             width: 18,
@@ -78,6 +80,7 @@ function Listado() {
                 filter: "",
                 isActive: -1,
                 unitMeasurement: 0,
+                unitMeasurementMaterial: 0,
                 offset: p.offset,
                 limit: p.limit,
                 sortBy: p.sort,
@@ -88,6 +91,10 @@ function Listado() {
             return res;
         }
     });
+}
+
+function rowStockFormatter(value, row, index) {
+    return value + " " + row.unitMeasurementMaterialName;
 }
 
 function rowNumFormatter(value, row, index) {  

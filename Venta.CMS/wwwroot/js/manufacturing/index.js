@@ -21,14 +21,21 @@ function Listado() {
             formatter: dateFormatter,
             title: 'Fecha de Fabricación',
             sortable: true,
-            width: 38,
+            width: 27,
             'widthUnit': '%'
         },
         {
             field: 'quantityTotal',
             title: 'Cantidad Total de Prendas',
             sortable: true,
-            width: 38,
+            width: 27,
+            'widthUnit': '%'
+        },
+        {
+            field: 'id',
+            formatter: seeDetail,
+            title: 'Detalle',
+            width: 20,
             'widthUnit': '%'
         },
         {
@@ -85,6 +92,10 @@ function dateFormatter(value, row, index) {
     return date;
 }
 
+function seeDetail(value, row, index) {
+    return `<a href='javascript:showModalDetail(${value})'>Ver detalle</a>`;
+}
+
 function optionsFormatter(value, row, index) {
     let html = `<div class="dropdown">
                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -122,4 +133,65 @@ async function deleteRecord(id) {
         alertConfirmation("Eliminado", "El registro ha sido eliminado.");
         Listado();
     }
+}
+
+function showModalDetail(id) {
+    getDataDetail(id);
+}
+
+async function getDataDetail(id) {
+
+    let response = await fetch(`${URLDETAIL}/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        let data = await response.json();
+        showData(data);
+        $("#modalManufacturingDetail").modal("show");
+    }
+}
+
+function showData(data) {
+    let $tableDetail = $('#tableManufacturingDetail');
+
+    $tableDetail.bootstrapTable('destroy');
+
+    let columns = [
+        {
+            title: '#',
+            formatter: rowNumFormatter,
+            align: 'center',
+            width: 10,
+            'widthUnit': '%'
+        },
+        {
+            field: 'clothingName',
+            title: 'Prenda',
+            width: 45,
+            'widthUnit': '%'
+        },
+        {
+            field: 'sizeName',
+            title: 'Talla',
+            width: 45,
+            'widthUnit': '%'
+        },
+        {
+            field: 'quantity',
+            title: 'Cantidad Producido',
+            width: 45,
+            'widthUnit': '%'
+        }
+    ];
+
+    $tableDetail.bootstrapTable({        
+        data: data.postManufacturingClothings,
+        columns: columns,
+        pagination: true
+    });
+
 }

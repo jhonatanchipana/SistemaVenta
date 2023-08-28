@@ -20,7 +20,7 @@ namespace Venta.Services
             services.AddScoped<IPurchaseService, PurchaseService>();
             services.AddScoped<IClothingService, ClothingService>();
             services.AddScoped<IManufacturingService, ManufacturingService>();
-            services.AddScoped<IActivityService, ActivityService>();
+            services.AddScoped<IReportInOutService, ReportInOutService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserStore<UserDTO>, UsersStore>();
             services.AddScoped<IClothingCategoryService, ClothingCategoryService>();

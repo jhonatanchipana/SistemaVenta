@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Reporte";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">Reporte Ingreso/Salida</h4>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row gx-3 gy-2 align-items-center">
+                <div class="col-md-3">
+                    <label class="form-label" for="selectTypeOpt">Actividad</label>
+                    <select class="form-control"></select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="showToastPlacement">&nbsp;</label>
+                    <button id="showToastPlacement" class="btn btn-primary d-block">Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive text-nowrap m-4 d-flex justify-content-center">
+            @*<canvas id="myChart" class="text-center" style="width:100%;max-width:600px"></canvas>*@
+        </div>
+    </div>
+    
+</div>
+
+
+@section Scripts{
+
+    <script>
+        var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+        var yValues = [55, 49, 44, 24, 15];
+        var barColors = ["red", "green", "blue", "orange", "brown"];
+
+        let cahr = new Chart("myChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    //backgroundColor: barColors,
+                    data: yValues
+                }]
+            },
+            options: {
+                plugins:{
+                    title:{
+                        display: true,
+                        text: "World Wine Production 2018"
+                    },
+                    legend: { display: false },
+                },               
+            }
+        });
+    </script>
+
+}

@@ -29,7 +29,7 @@ namespace Venta.CMS.Controllers
             {
                 return View(model);
             }
-
+            //var s = _signInManager.
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.Remember, lockoutOnFailure: false);
 
             if(result.Succeeded)

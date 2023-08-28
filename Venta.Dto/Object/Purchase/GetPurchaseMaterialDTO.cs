@@ -36,6 +36,7 @@ namespace Venta.Dto.Object.Purchase
         /// </summary>
         public decimal Price { get; set; }
 
+
         /// <summary>
         /// Usuario quien creo el registro
         /// </summary>

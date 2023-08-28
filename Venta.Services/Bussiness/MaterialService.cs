@@ -22,11 +22,11 @@ namespace Venta.Services.Bussiness
             _materialRepository = materialRepository;
         }
 
-        public async Task<ResultsDTO<GetListMaterialDTO>> GetAll(string filter, bool? isActive, int unitMeasurement, int offset, int limit, string sortBy, string orderBy)
+        public async Task<ResultsDTO<GetListMaterialDTO>> GetAll(string filter, bool? isActive, int unitMeasurement, int unitMeasurementMaterial, int offset, int limit, string sortBy, string orderBy)
         {
             try
             {
-                var tuple = await _materialRepository.GetAll(filter, isActive, (UnitMeasurementType)unitMeasurement, offset, limit, sortBy, orderBy);
+                var tuple = await _materialRepository.GetAll(filter, isActive, (UnitMeasurementType)unitMeasurement, (UnitMeasurementMaterialType)unitMeasurementMaterial, offset, limit, sortBy, orderBy);
 
                 var records = tuple.Item1
                             .Select(a => new GetListMaterialDTO
@@ -39,6 +39,8 @@ namespace Venta.Services.Bussiness
                                 UnitMeasurementId = (int)a.UnitMeasurement,
                                 UnitMeasurementName = EnumManager.GetEnumDescription(a.UnitMeasurement),
                                 Stock = a.Stock,
+                                UnitMeasurementMaterialId = (int)a.UnitMeasurementMaterial,
+                                UnitMeasurementMaterialName = EnumManager.GetEnumDescription(a.UnitMeasurementMaterial),
                                 CreateBy = a.CreateBy,
                                 CreationDate = a.CreationDate,
                                 ModifiedBy = a.ModifiedBy,
@@ -76,6 +78,7 @@ namespace Venta.Services.Bussiness
                     UnitQuantity = material.UnitQuantity,
                     UnitMeasurement = material.UnitMeasurement,
                     Stock = material.Stock,
+                    UnitMeasurementMaterial = material.UnitMeasurementMaterial,
                     CreateBy = user,
                     CreationDate = DateTime.Now,
                     ModifiedBy = null,
@@ -110,7 +113,7 @@ namespace Venta.Services.Bussiness
                 entity.Cost = material.Cost;
                 entity.UnitQuantity = material.UnitQuantity;
                 entity.UnitMeasurement = (UnitMeasurementType)material.UnitMeasurement;
-                entity.Stock = material.Stock;
+                entity.UnitMeasurementMaterial = (UnitMeasurementMaterialType)material.UnitMeasurementMaterial;
                 entity.ModifiedBy = user;
                 entity.ModificationDate = DateTime.Now;
 
@@ -126,14 +129,14 @@ namespace Venta.Services.Bussiness
         }
 
 
-        public async Task<GetMaterialDTO> GetById(int id)
+        public async Task<PostMaterialViewModel> GetById(int id)
         {
             var entity = await _materialRepository.GetById(id);
-            if (entity == null) throw new Exception("El material no existe");
+            if (entity == null) throw new Exception("El registro no existe");
 
             try
             {
-                var material = new GetMaterialDTO
+                var material = new PostMaterialViewModel
                 {
                     Id = entity.Id,
                     Name = entity.Name,
@@ -142,12 +145,11 @@ namespace Venta.Services.Bussiness
                     UnitQuantity = entity.UnitQuantity,
                     UnitMeasurement = entity.UnitMeasurement,
                     Stock = entity.Stock,
-                    CreateBy = entity.CreateBy,
+                    UnitMeasurementMaterial = entity.UnitMeasurementMaterial,
+                    CreatedBy = entity.CreateBy,
                     CreationDate = entity.CreationDate,
                     ModifiedBy = entity.ModifiedBy,
-                    ModificationDate = entity.ModificationDate,
-                    IsActive = entity.IsActive,
-                    DeletionDate = entity.DeletionDate
+                    ModificationDate = entity.ModificationDate
                 };
 
                 return material;
@@ -222,7 +224,9 @@ namespace Venta.Services.Bussiness
                     UnitMeasurementId = (int)x.UnitMeasurement,
                     UnitMeasurementDescription = EnumManager.GetEnumDescription(x.UnitMeasurement),
                     Cost = x.Cost,
-                    UnitQuantity = x.UnitQuantity
+                    UnitQuantity = x.UnitQuantity,
+                    UnitMeasurementMaterialId = (int)x.UnitMeasurementMaterial,
+                    UnitMeasurementMaterialDescription = EnumManager.GetEnumDescription(x.UnitMeasurementMaterial)
                 });
 
                 return result;

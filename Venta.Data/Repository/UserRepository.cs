@@ -65,6 +65,8 @@ namespace Venta.Data.Repository
 
         public async Task<User?> GetByUserNameNormalized(string userNameNormalized)
         {
+            var entitylist = (from a in _context.User select a).ToList();
+
             var entity = (from a in _context.User
                           where a.DeletionDate == null
                             && a.IsActive

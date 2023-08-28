@@ -81,5 +81,15 @@ namespace Venta.Dto.Object.Material
         /// Fecha de Eliminacion
         /// </summary>
         public DateTime? DeletionDate { get; set; }
+
+        /// <summary>
+        /// Identificacador de la Unidad de medida del material
+        /// </summary>
+        public int UnitMeasurementMaterialId { get; set; }
+
+        /// <summary>
+        /// Descripcion de Unidad de medida del material
+        /// </summary>
+        public string UnitMeasurementMaterialName { get; set; } = string.Empty;
     }
 }

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Venta.Dto.Object.Activity
+namespace Venta.Dto.Object.ReportInOut
 {
     /// <summary>
     /// Representa el DTO para el listado de la campañas
     /// </summary>
-    public class GetListActivityDTO
+    public class GetListReportInOutDTO
     {
         /// <summary>
         /// Identificador del registro

@@ -46,7 +46,7 @@ namespace Venta.Dto.Object.Material
         /// </summary>
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display(Name = "Unidad/Cantidad")]
-        [RegularExpression("(^[0-9]+$)", ErrorMessage = "Debe ingresar solo nùmeros")]
+        [RegularExpression("(^[0-9]+$)", ErrorMessage = "Debe ingresar solo nùmeros enteros")]
         public int UnitQuantity { get; set; }
 
         /// <summary>
@@ -61,6 +61,13 @@ namespace Venta.Dto.Object.Material
         /// </summary>
         [Display(Name = "Stock")]               
         public int Stock { get; set; }
+
+        /// <summary>
+        /// Unidad de medidad del material
+        /// </summary>
+        [Required(ErrorMessage = "El campo {0} es requerido")]
+        [Display(Name = "Unidad de Medida del material")]
+        public UnitMeasurementMaterialType UnitMeasurementMaterial { get; set; }
 
         /// <summary>
         /// Usuario quien registro la entidad

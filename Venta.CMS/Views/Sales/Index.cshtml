@@ -33,6 +33,9 @@
         </div>
     </div>
     <!--/ Responsive Table -->
+
+    <partial name="_ModalSalesDetail"/>
+
 </div>
 
 @section Scripts{
@@ -41,6 +44,7 @@
         const UrlBase = '@Url.Action("GetList")';
         const UrlUpdate = '@Url.Action("Edit")';
         const UrlDelete = '@Url.Action("Delete")';
+        const URLDETAIL = '@Url.Action("GetById")';
         let $tableMain = $('#table-sales');
     </script>
     <script src="~/js/sales/index.js" asp-append-version="true"></script>

@@ -33,6 +33,7 @@ function Listado() {
         {
             field: 'costTotal',
             title: 'Costo Total',
+            formatter: rowMoneyFormatter,
             sortable: true,
             width: 25,
             'widthUnit': '%'

@@ -11,6 +11,7 @@ namespace Venta.Data.Interfaces
     {
         void Add(ClothingMaterial entity);
         Task<IEnumerable<ClothingMaterial>> GetAllByClothingId(int clothingId);
+        Task<IEnumerable<ClothingMaterial>> GetAllByClothingIds(int[] clothingIds);
         void Update(ClothingMaterial entity);
     }
 }

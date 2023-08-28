@@ -16,6 +16,18 @@
     };
 
     comboUnitMeasurement.AddRange(listUnitMeasurement);
+
+    var listUnitMeasurementMaterial = Html.GetEnumSelectList<UnitMeasurementMaterialType>();
+    var comboUnitMeasurementMaterial = new List<SelectListItem>()
+    {
+        new SelectListItem()
+        {
+            Value = string.Empty,
+            Text = "Seleccione una opción"
+        }
+    };
+
+    comboUnitMeasurementMaterial.AddRange(listUnitMeasurementMaterial);
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -56,6 +68,16 @@
                                        class="form-control"
                                        placeholder="0.00" />
                                 <span asp-validation-for="Cost" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" asp-for="UnitMeasurementMaterial"></label>
+                            <div class="col-sm-10">
+                                <select asp-for="UnitMeasurementMaterial" asp-items="@comboUnitMeasurementMaterial"
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="0"></select>
+                                <span asp-validation-for="UnitMeasurementMaterial" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="row mb-3">

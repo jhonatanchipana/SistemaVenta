@@ -114,9 +114,11 @@ namespace Venta.Services.Bussiness
                     _purchaseMaterialRepository.Add(entityDetail);
 
                     var material = await _materialRepository.GetById(item.MaterialId);
+
                     if (material is not null)
                     {
                         material.Stock += item.Quantity;
+                        material.StockReal += item.Quantity * item.UnitQuantity;
                         _materialRepository.Update(material);
                     }
                    
@@ -175,6 +177,7 @@ namespace Venta.Services.Bussiness
                     if (material is not null)
                     {
                         material.Stock -= item.Quantity;
+                        material.StockReal -= item.Quantity * material.UnitQuantity;
                         _materialRepository.Update(material);
                     }
                 }
@@ -186,6 +189,7 @@ namespace Venta.Services.Bussiness
                     if (modelDetailUpdate is not null)
                     {
                         var quantityActual = item.Quantity;
+
                         item.PriceUnit = modelDetailUpdate.PriceUnit;
                         item.Quantity = modelDetailUpdate.Quantity;
                         item.ModifiedBy = user;
@@ -197,6 +201,7 @@ namespace Venta.Services.Bussiness
                         if (material is not null)
                         {
                             material.Stock = material.Stock + modelDetailUpdate.Quantity - quantityActual;
+                            material.StockReal = material.StockReal - (quantityActual * material.UnitQuantity)  +  (material.UnitQuantity * modelDetailUpdate.Quantity);
                             _materialRepository.Update(material);
                         }
                     }
@@ -223,6 +228,7 @@ namespace Venta.Services.Bussiness
                     if (material is not null)
                     {
                         material.Stock += item.Quantity;
+                        material.StockReal += item.Quantity * item.UnitQuantity;
                         _materialRepository.Update(material);
                     }
 
@@ -239,14 +245,14 @@ namespace Venta.Services.Bussiness
         }
 
 
-        public async Task<GetPurchaseDTO> GetById(int id)
+        public async Task<PostPurchaseViewModel> GetById(int id)
         {
             var entity = await _purchaseRepository.GetById(id);
             if (entity == null) throw new Exception("La Compra de Material no existe");
 
             try
             {
-                var material = new GetPurchaseDTO
+                var model = new PostPurchaseViewModel
                 {
                     Id = entity.Id,
                     BuyDate = entity.BuyDate,
@@ -256,31 +262,30 @@ namespace Venta.Services.Bussiness
                     CreateBy = entity.CreateBy,
                     CreationDate = entity.CreationDate,
                     ModifiedBy = entity.ModifiedBy,
-                    ModificationDate = entity.ModificationDate,
-                    IsActive = entity.IsActive,
-                    DeletionDate = entity.DeletionDate
+                    ModificationDate = entity.ModificationDate                    
                 };
 
                 var entityDetail =  await _purchaseMaterialRepository.GetAllByBuyMaterialId(entity.Id);
 
-                var materialDetail = entityDetail.Select(x => new GetPurchaseMaterialDTO()
+                var materialDetail = entityDetail.Select(x => new PostPurchaseMaterialViewModel()
                 {
                     Id = x.Id,
                     MaterialId = x.MaterialId,
                     MaterialName = x.Material?.Name ?? string.Empty,
-                    Price = x.PriceUnit,
                     Quantity = x.Quantity,
                     CreateBy = x.CreateBy,
                     CreationDate = x.CreationDate,                                      
                     ModifiedBy = x.ModifiedBy,
                     ModificationDate = x.ModificationDate,
-                    IsActive = x.IsActive,
-                    DeletionDate = x.DeletionDate,
+                    PriceUnit = x.PriceUnit,
+                    UnitMeasurement = x.Material?.UnitMeasurement ?? 0,
+                    UnitQuantity = x.Material?.UnitQuantity ?? 0,
+                    UnitMeasurementMaterial = x.Material?.UnitMeasurementMaterial ?? 0
                 }).ToList();
 
-                material.BuyMaterialDetailDTO = materialDetail;
+                model.PostBuyMaterialDetail = materialDetail;
 
-                return material;
+                return model;
 
             }
             catch (Exception ex)
@@ -325,14 +330,15 @@ namespace Venta.Services.Bussiness
                 foreach (var item in entityDetail)
                 {
                     item.DeletionDate = DateTime.Now;
-                    _purchaseMaterialRepository.Update(item);
 
                     var material = await _materialRepository.GetById(item.MaterialId);
                     if (material is not null)
                     {
                         material.Stock -= item.Quantity;
-                        _materialRepository.Update(material);
+                        material.StockReal -= item.Quantity * material.UnitQuantity;
                     }
+
+                    _purchaseMaterialRepository.Update(item);
                 }
 
                 await _unitOfWork.SaveChangesAsync();

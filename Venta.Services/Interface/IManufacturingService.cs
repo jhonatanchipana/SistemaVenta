@@ -14,7 +14,8 @@ namespace Venta.Services.Interface
         Task<int> Create(PostManufacturingViewModel model, string user);
         Task Delete(int id, string user);
         Task<ResultsDTO<GetListManufacturingDTO>> GetAll(string filter, bool? isActive, int offset, int limit, string sortBy, string orderBy);
-        Task<PostManufacturingViewModel> GetById(int id);
+        Task<GetManufacturingDTO> GetById(int id);
+        Task<PostManufacturingViewModel> GetByIdPost(int id);
         Task<int> Update(PostManufacturingViewModel model, string user);
     }
 }

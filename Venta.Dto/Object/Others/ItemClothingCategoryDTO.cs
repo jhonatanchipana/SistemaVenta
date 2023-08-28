@@ -14,5 +14,7 @@ namespace Venta.Dto.Object.Others
         public string UnitMeasurementDescription { get; set; } = string.Empty;
         public decimal Cost { get; set; }
         public int UnitQuantity { get; set; }
+        public int UnitMeasurementMaterialId { get; set; }
+        public string UnitMeasurementMaterialDescription { get; set; } = string.Empty;
     }
 }

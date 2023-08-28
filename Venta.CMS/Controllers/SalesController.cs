@@ -52,7 +52,7 @@ namespace Venta.CMS.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await _salesService.GetById(id);
+            var model = await _salesService.GetByIdPost(id);
 
             if (model == null)
             {
@@ -85,7 +85,7 @@ namespace Venta.CMS.Controllers
         [HttpPut]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _salesService.GetById(id);
+            var entity = await _salesService.GetByIdPost(id);
 
             if (entity is null) return NotFound();
 
@@ -93,6 +93,16 @@ namespace Venta.CMS.Controllers
             await _salesService.Delete(id, userName);
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var model = await _salesService.GetById(id);
+
+            if (model is null) return NotFound();
+
+            return Json(model);
         }
     }
 }

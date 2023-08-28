@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Venta.Dto.Object.Account
 {
-    public  class UserDTO
+    public class UserDTO
     {
         /// <summary>
         /// Identificador del usurio

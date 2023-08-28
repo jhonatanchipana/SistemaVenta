@@ -1,4 +1,5 @@
-﻿using SistemaVenta.Entities;
+﻿using Microsoft.AspNetCore.Razor.Hosting;
+using SistemaVenta.Entities;
 using Venta.Data.Interfaces;
 using Venta.Data.Repository;
 using Venta.Dto.Object.Clothing;
@@ -198,7 +199,6 @@ namespace Venta.Services.Bussiness
 
                         _salesClothingRepository.Update(item);
                     }
-
                 }
 
                 foreach (var item in entityDetailNew)
@@ -228,7 +228,7 @@ namespace Venta.Services.Bussiness
             }
         }
 
-        public async Task<PostSalesViewModel> GetById(int id)
+        public async Task<PostSalesViewModel> GetByIdPost(int id)
         {
             var entity = await _salesRepository.GetById(id);
             if (entity == null) throw new Exception("El registro no existe");
@@ -255,6 +255,31 @@ namespace Venta.Services.Bussiness
             catch (Exception ex)
             {
                 throw new Exception("Error al obtener Venta");
+            }
+        }
+
+        public async Task<GetSalesDTO> GetById(int id)
+        {
+            var entity = await _salesRepository.GetById(id);
+
+            if (entity == null) throw new Exception("El registro no existe");
+
+            var entityDetail = await _salesClothingRepository.GetAllBySalesIdDTO(entity.Id);
+
+            try
+            {
+                var material = new GetSalesDTO
+                {
+                    Id = entity.Id,
+                    SalesClothings = entityDetail
+                };
+
+                return material;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener Venta detalle");
             }
         }
 
@@ -285,11 +310,24 @@ namespace Venta.Services.Bussiness
 
             try
             {
-                entity.ModifiedBy = user;
-                entity.ModificationDate = DateTime.Now;
                 entity.DeletionDate = DateTime.Now;
 
-                _salesRepository.Update(entity);
+                var entityDetail = await _salesClothingRepository.GetAllBySalesId(entity.Id);
+
+                foreach (var item in entityDetail)
+                {
+                    item.DeletionDate = DateTime.UtcNow;
+
+                    if(item.ClothingSize is not null)
+                    {
+                        item.ClothingSize.Stock += item.Quantity;
+                    }
+
+                    if(item.Clothing is not null)
+                    {
+                        item.Clothing.Stock += item.Quantity;
+                    }
+                }
 
                 await _unitOfWork.SaveChangesAsync();
             }

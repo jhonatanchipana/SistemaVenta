@@ -18,9 +18,9 @@ function Listado() {
         },
         {
             field: 'name',
-            title: 'Nombre de la actividad',
-            width: 35,
-            'widthUnit': '%'
+            title: 'Nombre del Reporte',
+            width: 30,
+            widthUnit: '%'
         },
         {
             field: 'initialDate',
@@ -28,7 +28,7 @@ function Listado() {
             sortable: true,
             formatter: dateFormatter,
             width: 20,
-            'widthUnit': '%'
+            widthUnit: '%'
 
         },
         {
@@ -37,14 +37,21 @@ function Listado() {
             sortable: true,
             formatter: dateFormatter,
             width: 20,
-            'widthUnit': '%'
+            widthUnit: '%'
+        },
+        {
+            field: 'id',
+            title: 'Ver',
+            formatter: seeInOutFormatter,
+            width: 15,
+            widthUnit: '%'
         },
         {
             field: 'id',
             formatter: optionsFormatter,
             title: 'Opciones',
-            width: 20,
-            'widthUnit': '%'
+            width: 10,
+            widthUnit: '%'
         }
     ];
 
@@ -93,6 +100,35 @@ function dateFormatter(value, row, index) {
     if (value == null) return;
     let date = moment(value).format("DD/MM/YYYY");
     return date;
+}
+
+function seeInOutFormatter(value, row, index) {
+    return `<a href="javascript:showModalReportInOut(${value})">Ver</a>`;
+}
+
+async function showModalReportInOut(id) {
+    let data = await getDataReportInOut(id);
+
+    $("#reportIn").text(`S/. ${data.purchaseTotal}`);
+    $("#reportOut").text(`S/. ${data.saleTotal}`);
+    $("#modalReportInOut").modal("show");
+}
+
+async function getDataReportInOut(id) {
+
+    let response = await fetch(`${URLINOUT}/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        let data = await response.json();
+        return data;
+    }
+
+    return null;
 }
 
 function optionsFormatter(value, row, index) {

@@ -25,7 +25,7 @@ namespace Venta.Data
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPurchaseMaterialRepository, PurchaseMaterialRepository>();
             services.AddScoped<IPurchaseRepository, PurchaseRepository>();
-            services.AddScoped<IActivityRepository, ActivityRepository>();
+            services.AddScoped<IReportInOutRepository, ReportInOutRepository>();
             services.AddScoped<IManufacturingRepository, ManufacturingRepository>();
             services.AddScoped<IManufacturingClothingSizeRepository, ManufacturingClothingSizeRepository>();
             services.AddScoped<IClothingRepository, ClothingRepository>();

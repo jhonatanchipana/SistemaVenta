@@ -37,7 +37,7 @@ namespace Venta.Data.Connection
         /// <summary>
         /// BdSet asociado a la campaña
         /// </summary>
-        public DbSet<Activity> Activity { get; set; }
+        public DbSet<ReportInOut> ReportInOut { get; set; }
 
         /// <summary>
         /// BdSet asociado a la ropa
@@ -142,21 +142,21 @@ namespace Venta.Data.Connection
             #endregion
 
             #region Configuración para la entidad Activity
-            modelBuilder.Entity<Activity>()
+            modelBuilder.Entity<ReportInOut>()
                 .Property(a => a.Name)
                 .IsRequired()
                 .HasMaxLength(250);
 
-            modelBuilder.Entity<Activity>()
+            modelBuilder.Entity<ReportInOut>()
                 .Property(a => a.InitialDate)
                 .IsRequired()
                 .HasColumnType("date");
 
-            modelBuilder.Entity<Activity>()
+            modelBuilder.Entity<ReportInOut>()
                .Property(a => a.EndDate)
                .HasColumnType("date");
 
-            modelBuilder.Entity<Activity>()
+            modelBuilder.Entity<ReportInOut>()
                .Property(a => a.StatusActivityType)
                .IsRequired();
             #endregion

@@ -32,10 +32,19 @@ function Listado() {
         {
             field: 'priceSuggested',
             title: 'Precio Sugerido',
+            formatter: rowMoneyFormatter,
             sortable: true,
             width: 15,
             'widthUnit': '%'
-        },       
+        },   
+        {
+            field: 'investmentUnit',
+            title: 'Inversión por Unidad',
+            formatter: rowMoneyFormatter,
+            sortable: true,
+            width: 6,
+            'widthUnit': '%'
+        }, 
         {
             field: 'isActive',
             title: 'Estado',
@@ -54,7 +63,7 @@ function Listado() {
             field: 'id',
             formatter: optionsFormatter,
             title: 'Opciones',
-            width: 18,
+            width: 12,
             'widthUnit': '%'
         }
     ];
@@ -90,6 +99,7 @@ function Listado() {
             };
         },
         responseHandler: function (res) {
+            console.log(res);
             return res;
         }
     });
@@ -102,6 +112,7 @@ function rowNumFormatter(value, row, index) {
 function sizeFormatter(value, row, index) {
     return `<a href="#" onclick="showModalClothingSize(${value})">Ver Tallas</a>`;
 }
+
 
 function showModalClothingSize(id) {
     $('#modalClothingSize').modal('show');

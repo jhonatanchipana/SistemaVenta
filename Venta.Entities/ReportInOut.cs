@@ -5,7 +5,7 @@ namespace SistemaVenta.Entities
     /// <summary>
     /// Represenata una campaña
     /// </summary>
-    public class Activity : BaseEntity
+    public class ReportInOut : BaseEntity
     {
         /// <summary>
         /// Nombre de la campaña

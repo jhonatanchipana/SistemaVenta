@@ -4,6 +4,7 @@ using Venta.Data.Connection;
 using Venta.Data.Interfaces;
 using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Venta.Data.Repository
 {
@@ -44,6 +45,20 @@ namespace Venta.Data.Repository
         public void Update(Sales entity)
         {
             _context.Update(entity);
+        }
+
+        public async Task<decimal> GetSaleBetweenDates(DateTime start, DateTime end)
+        {
+            var endDate = end.AddDays(1).AddSeconds(-1);
+            var query = (from a in _context.Sales
+                         where 
+                            a.DeletionDate == null
+                            && a.SaleDate >= start
+                            && a.SaleDate <= endDate
+                         select a.PriceTotal);
+
+            return await query.SumAsync();
+
         }
 
     }

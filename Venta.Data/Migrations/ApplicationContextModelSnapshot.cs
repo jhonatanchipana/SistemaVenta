@@ -22,59 +22,6 @@ namespace Venta.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SistemaVenta.Entities.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreateBy")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("InitialDate")
-                        .HasColumnType("date");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<int>("PurchaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StatusActivityType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.ToTable("Activity");
-                });
-
             modelBuilder.Entity("SistemaVenta.Entities.Clothing", b =>
                 {
                     b.Property<int>("Id")
@@ -262,10 +209,16 @@ namespace Venta.Data.Migrations
                     b.Property<int>("Stock")
                         .HasColumnType("int");
 
+                    b.Property<int>("StockReal")
+                        .HasColumnType("int");
+
                     b.Property<int>("StockUnitQuantity")
                         .HasColumnType("int");
 
                     b.Property<int>("UnitMeasurement")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitMeasurementMaterial")
                         .HasColumnType("int");
 
                     b.Property<int>("UnitQuantity")
@@ -373,6 +326,59 @@ namespace Venta.Data.Migrations
                     b.HasIndex("PurchaseId");
 
                     b.ToTable("PurchaseMaterial");
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entities.ReportInOut", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreateBy")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("InitialDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusActivityType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("ReportInOut");
                 });
 
             modelBuilder.Entity("SistemaVenta.Entities.Sales", b =>
@@ -728,17 +734,6 @@ namespace Venta.Data.Migrations
                     b.ToTable("Size");
                 });
 
-            modelBuilder.Entity("SistemaVenta.Entities.Activity", b =>
-                {
-                    b.HasOne("SistemaVenta.Entities.Purchase", "Purchase")
-                        .WithMany()
-                        .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Purchase");
-                });
-
             modelBuilder.Entity("SistemaVenta.Entities.Clothing", b =>
                 {
                     b.HasOne("SistemaVenta.Entities.ClothingCategory", "ClothingCategory")
@@ -765,6 +760,17 @@ namespace Venta.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Material");
+
+                    b.Navigation("Purchase");
+                });
+
+            modelBuilder.Entity("SistemaVenta.Entities.ReportInOut", b =>
+                {
+                    b.HasOne("SistemaVenta.Entities.Purchase", "Purchase")
+                        .WithMany()
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Purchase");
                 });

@@ -60,14 +60,62 @@ function addRowMaterial() {
             select: selectMaterial
         });
 
-        let inputQuantity = $('<input>').attr({
-            type: 'text',
-            name: `PostBuyMaterialDetail[${count}].Quantity`,
+        //let inputQuantity = $('<input>').attr({
+        //    type: 'text',
+        //    name: `PostBuyMaterialDetail[${count}].Quantity`,
+        //    value: '',
+        //    class: 'form-control',
+        //    'data-rule-required': 'true',
+        //    'data-msg-required': 'El campo Cantidad es obligatorio.'
+        //});
+
+        let inputMaterialUnitQuantity = $('<input>').attr({
+            type: 'hidden',
+            name: `PostBuyMaterialDetail[${count}].UnitQuantity`,
             value: '',
             class: 'form-control',
-            'data-rule-required': 'true',
-            'data-msg-required': 'El campo Cantidad es obligatorio.'
         });
+
+        let inputMaterialUnitMeasurement = $('<input>').attr({
+            type: 'hidden',
+            name: `PostBuyMaterialDetail[${count}].UnitMeasurement`,
+            value: '',
+            class: 'form-control',
+        });
+
+        let inputMaterialUnitMeasurementMaterial = $('<input>').attr({
+            type: 'hidden',
+            name: `PostBuyMaterialDetail[${count}].UnitMeasurementMaterial`,
+            value: '',
+            class: 'form-control',
+        });
+
+        let divQuantity = $('<div>').attr({
+            class: 'd-flex'
+        });
+
+        let inputQuantity = $('<input>')
+            .attr({
+                type: 'text',
+                name: `PostBuyMaterialDetail[${count}].Quantity`,
+                value: '',
+                class: 'form-control',
+                'data-rule-required': 'true',
+                'data-msg-required': 'El campo Cantidad es obligatorio.',
+                'data-rule-number': 'true',
+                'data-msg-number': 'Debe ingresar solo números.'
+            })
+            .css({
+                'width': '80%'
+            });
+
+        let labelQuantity = $('<label>').attr({
+            id: `labelQuantity_${count}`,
+            class: 'm-auto p-2'
+        });
+
+        divQuantity.append(inputQuantity);
+        divQuantity.append(labelQuantity);
 
         let inputPrice = $('<input>').attr({
             type: 'text',
@@ -106,7 +154,10 @@ function addRowMaterial() {
         cell2.append(inputMaterialAutocomplete);
         cell2.append(inputMaterial);
         cell2.append(validationMaterialId);
-        cell3.append(inputQuantity);
+        cell2.append(inputMaterialUnitQuantity);
+        cell2.append(inputMaterialUnitMeasurement);
+        cell2.append(inputMaterialUnitMeasurementMaterial);
+        cell3.append(divQuantity);
         cell3.append(validationQuantity);
         cell4.append(inputPrice);
         cell4.append(validationPrice);
@@ -144,7 +195,7 @@ function refreshNumeration() {
         let firstColumn = $(this).find('td').eq(0);
         let column = $(this).find('td:nth-child(2),td:nth-child(3),td:nth-child(4),td:nth-child(5)');
 
-        column.children('input,span,a').each(function (indexColumn, elementColumn) {
+        column.children('input,span,a,div').each(function (indexColumn, elementColumn) {
             if ($(elementColumn).is(':input') && $(elementColumn).attr('name').includes('PostBuyMaterialDetail')) {
                 let name = $(elementColumn).attr('name').toString().replace(/\d/g, index);
                 $(elementColumn).attr('name', name);
@@ -163,6 +214,19 @@ function refreshNumeration() {
             if ($(elementColumn).is(':input') && $(elementColumn).attr('name').includes('Material_')) {
                 let name = $(elementColumn).attr('name').toString().replace(/\d/g, index);
                 $(elementColumn).attr('name', name);
+            }
+            
+            if ($(elementColumn).is('div')) {                
+                $(elementColumn).children('input,label').each(function (indexColumn, divElementColumn) {
+                    if ($(divElementColumn).is(':input')) {
+                        let name = $(divElementColumn).attr('name').toString().replace(/\d/g, index);
+                        console.log(name);
+                        $(divElementColumn).attr('name', name);
+                    } else {
+                        let idLabel = $(divElementColumn).attr("id").toString().replace(/\d/g, index);
+                        $(divElementColumn).attr('id', idLabel);
+                    }
+                });
             }
             
         });
@@ -196,7 +260,13 @@ async function sourceMaterial(request, response) {
     response(data.map(function (item) {
         return {
             value: item.name,
-            id: item.id
+            id: item.id,
+            unitMeasurementId: item.unitMeasurementId,
+            unitMeasurementDescription: item.unitMeasurementDescription,
+            cost: item.cost,
+            unitQuantity: item.unitQuantity,
+            unitMeasurementMaterialId: item.unitMeasurementMaterialId,
+            unitMeasurementMaterialDescription: item.unitMeasurementMaterialDescription
         };
     }));
 }
@@ -235,10 +305,18 @@ function selectMaterial(event, ui) {
     let id = input.attr('name').replace('Material_', '');
     let inputId = `input[name="PostBuyMaterialDetail[${id}].MaterialId"]`;
     let inputName = `input[name="PostBuyMaterialDetail[${id}].MaterialName"]`;
+    let inputMaterialUnitQuantity = `input[name="PostBuyMaterialDetail[${id}].UnitQuantity"]`;
+    let inputMaterialUnitMeasurement = `input[name="PostBuyMaterialDetail[${id}].UnitMeasurement"]`;
+    let inputMaterialUnitMeasurementMaterial = `input[name="PostBuyMaterialDetail[${id}].UnitMeasurementMaterial"]`;
+    let labelQuantity = `#labelQuantity_${id}`;
     let deleteIndex = `#deleteIndex_${id}`;
 
     $(inputId).val(ui.item.id);
     $(inputName).val(ui.item.value);
+    $(inputMaterialUnitQuantity).val(ui.item.unitQuantity);
+    $(inputMaterialUnitMeasurement).val(ui.item.unitMeasurementId);
+    $(inputMaterialUnitMeasurementMaterial).val(ui.item.unitMeasurementMaterialId);
+    $(labelQuantity).text(ui.item.unitMeasurementMaterialDescription); 
     $(deleteIndex).attr('data-materialid', ui.item.id);
 
     input.prop('disabled', true);     

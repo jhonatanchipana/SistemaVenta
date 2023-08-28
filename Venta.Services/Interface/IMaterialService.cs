@@ -14,9 +14,9 @@ namespace Venta.Services.Interface
         Task ChangeStatus(int id, bool isActive, string user);
         Task<int> Create(PostMaterialViewModel material, string user);
         Task Delete(int id, string user);
-        Task<ResultsDTO<GetListMaterialDTO>> GetAll(string filter, bool? isActive, int unitMeasurement, int offset, int limit, string sortBy, string orderBy);
+        Task<ResultsDTO<GetListMaterialDTO>> GetAll(string filter, bool? isActive, int unitMeasurement, int unitMeasurementMaterial, int offset, int limit, string sortBy, string orderBy);
         Task<IEnumerable<ItemClothingCategoryDTO>> GetAutocomplete(string filter, int limit, int[] ignoreIds);
-        Task<GetMaterialDTO> GetById(int id);
+        Task<PostMaterialViewModel> GetById(int id);
         Task<int> Update(PostMaterialViewModel material, string user);
         Task<bool> ValidateMaterialInUse(int id);
     }

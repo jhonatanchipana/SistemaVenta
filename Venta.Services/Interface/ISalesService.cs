@@ -14,7 +14,8 @@ namespace Venta.Services.Interface
         Task<int> Create(PostSalesViewModel model, string user);
         Task Delete(int id, string user);
         Task<ResultsDTO<GetListSalesDTO>> GetAll(string filter, bool? isActive, int offset, int limit, string sortBy, string orderBy);
-        Task<PostSalesViewModel> GetById(int id);
+        Task<PostSalesViewModel> GetByIdPost(int id);
+        Task<GetSalesDTO> GetById(int id);
         Task<int> Update(PostSalesViewModel model, string user);
     }
 }

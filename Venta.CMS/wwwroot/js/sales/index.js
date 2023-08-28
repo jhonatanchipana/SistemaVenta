@@ -20,35 +20,50 @@ function Listado() {
             field: 'saleDate',
             title: 'Fecha Venta',
             formatter: dateFormatter,
-            width: 19,
+            width: 14,
             widthUnit: '%'
         },
         {
             field: 'quantityTotal',
             title: 'Cantidad Total',
             sortable: true,
-            width: 19,
+            width: 14,
+            widthUnit: '%'
+        },
+        {
+            field: 'priceTotal',
+            title: 'Precio Total',
+            formatter: rowMoneyFormatter,
+            sortable: true,
+            width: 14,
             widthUnit: '%'
         },
         {
             field: 'investment',
             title: 'Inversion Total',
+            formatter: rowMoneyFormatter,
             sortable: true,
-            width: 19,
+            width: 14,
             widthUnit: '%'
         },
         {
-            field: 'investment',
+            formatter: revenueFormatter,
             title: 'Ganancia',
-            sortable: true,
-            width: 19,
+            width: 14,
             widthUnit: '%'
+        },
+        {
+            field: 'id',
+            formatter: seeDetail,
+            title: 'Detalle',
+            width: 12,
+            'widthUnit': '%'
         },
         {
             field: 'id',
             formatter: optionsFormatter,
             title: 'Opciones',
-            width: 18,
+            width: 12,
             widthUnit: '%'
         }
     ];
@@ -98,6 +113,15 @@ function dateFormatter(value, row, index) {
     return date;
 }
 
+function revenueFormatter(value, row, index) {
+    let revenue = row.priceTotal - row.investment;
+    return `S/. ${revenue}`;
+}
+
+function seeDetail(value, row, index) {
+    return `<a href='javascript:showModalDetail(${value})'>Ver detalle</a>`;
+}
+
 function optionsFormatter(value, row, index) {
     let html = `<div class="dropdown">
                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
@@ -135,4 +159,72 @@ async function deleteRecord(id) {
         alertConfirmation("Eliminado", "El registro ha sido eliminado.");
         Listado();
     }
+}
+
+function showModalDetail(id) {
+    getDataDetail(id);
+}
+
+async function getDataDetail(id) {
+
+    let response = await fetch(`${URLDETAIL}/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        let data = await response.json();
+        showData(data);
+        $("#modalSalesDetail").modal("show");
+    }
+}
+
+function showData(data) {
+    let $tableDetail = $('#tableSalesDetail');
+
+    $tableDetail.bootstrapTable('destroy');
+
+    let columns = [
+        {
+            title: '#',
+            formatter: rowNumFormatter,
+            align: 'center',
+            width: 10,
+            'widthUnit': '%'
+        },
+        {
+            field: 'clothingName',
+            title: 'Prenda',
+            width: 30,
+            'widthUnit': '%'
+        },
+        {
+            field: 'sizeName',
+            title: 'Talla',
+            width: 20,
+            'widthUnit': '%'
+        },
+        {
+            field: 'quantity',
+            title: 'Cantidad Vendido',
+            width: 20,
+            'widthUnit': '%'
+        },
+        {
+            field: 'priceUnit',
+            title: 'Precio/Unidad',
+            formatter: rowMoneyFormatter,
+            width: 20,
+            'widthUnit': '%'
+        }
+    ];
+
+    $tableDetail.bootstrapTable({
+        data: data.salesClothings,
+        columns: columns,
+        pagination: true
+    });
+
 }

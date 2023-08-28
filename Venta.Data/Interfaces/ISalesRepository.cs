@@ -12,6 +12,7 @@ namespace Venta.Data.Interfaces
         void Add(Sales entity);
         Task<(IEnumerable<Sales>, int)> GetAll(string filter, bool? isActive, int offset, int limit, string sortBy, string orderBy);
         Task<Sales?> GetById(int id);
+        Task<decimal> GetSaleBetweenDates(DateTime start, DateTime end);
         void Update(Sales entity);
     }
 }

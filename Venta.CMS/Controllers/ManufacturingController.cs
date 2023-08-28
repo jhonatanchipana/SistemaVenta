@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Venta.Dto.Object.Manufacturing;
 using Venta.Services.Bussiness;
 using Venta.Services.Interface;
@@ -58,7 +59,7 @@ namespace Venta.CMS.Controllers
         [HttpPut]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _manufacturingService.GetById(id);
+            var entity = await _manufacturingService.GetByIdPost(id);
 
             if (entity is null) return NotFound();
 
@@ -66,6 +67,16 @@ namespace Venta.CMS.Controllers
             await _manufacturingService.Delete(id, userName);
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var model = await _manufacturingService.GetById(id);
+
+            if(model is null) return NotFound(); 
+
+            return Json(model);
         }
     }
 }

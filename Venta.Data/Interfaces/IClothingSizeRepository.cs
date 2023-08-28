@@ -13,6 +13,7 @@ namespace Venta.Data.Interfaces
         void Add(ClothingSize entity);
         Task<IEnumerable<ItemClothingSizeDTO>> GetAll(string filter, int limit);
         Task<IEnumerable<ClothingSize>> GetAllByClothingId(int clothingId);
+        Task<IEnumerable<ClothingSize>> GetAllByIds(int[] ids);
         Task<ClothingSize?> GetById(int id);
         void Update(ClothingSize entity);
     }

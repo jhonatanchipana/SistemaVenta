@@ -23,7 +23,7 @@ namespace Venta.Data.Repository
             _context = context;
         }
 
-        public async Task<(IEnumerable<Material>, int)> GetAll(string filter, bool? isActive, UnitMeasurementType unitMeasurement, int offset, int limit, string sortBy, string orderBy)
+        public async Task<(IEnumerable<Material>, int)> GetAll(string filter, bool? isActive, UnitMeasurementType unitMeasurement, UnitMeasurementMaterialType unitMeasurementMaterial, int offset, int limit, string sortBy, string orderBy)
         {
             var query = (from a in _context.Material
                          let description = a.Description ?? string.Empty
@@ -33,6 +33,8 @@ namespace Venta.Data.Repository
                             )
                             &&
                             (unitMeasurement == 0 || unitMeasurement == a.UnitMeasurement)
+                            &&
+                            (unitMeasurementMaterial == 0 || unitMeasurementMaterial == a.UnitMeasurementMaterial)
                             &&
                             (isActive.HasValue ? (a.IsActive == isActive) : (a.IsActive == a.IsActive))
                             &&

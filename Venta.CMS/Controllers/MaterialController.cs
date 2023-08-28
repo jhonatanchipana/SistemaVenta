@@ -23,9 +23,9 @@ namespace Venta.CMS.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetList(string filter, bool? isActive, int unitMeasurement, int offset, int limit, string sortBy, string orderBy)
+        public async Task<IActionResult> GetList(string filter, bool? isActive, int unitMeasurement, int unitMeasurementMaterial, int offset, int limit, string sortBy, string orderBy)
         {
-            var result = await _serviceMaterial.GetAll(filter, isActive, unitMeasurement, offset, limit, sortBy, orderBy);
+            var result = await _serviceMaterial.GetAll(filter, isActive, unitMeasurement, unitMeasurementMaterial, offset, limit, sortBy, orderBy);
             return Json(result);
         }
 
@@ -50,28 +50,13 @@ namespace Venta.CMS.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var entity = await _serviceMaterial.GetById(id);
+            var model = await _serviceMaterial.GetById(id);
 
-            if (entity == null)
+            if (model == null)
             {
                 return NotFound();
             }
-
-            var model = new PostMaterialViewModel()
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                Cost = entity.Cost,
-                UnitQuantity = entity.UnitQuantity,
-                UnitMeasurement = entity.UnitMeasurement,
-                Stock = entity.Stock,
-                CreatedBy = entity.CreateBy,
-                CreationDate = entity.CreationDate,
-                ModifiedBy = entity.ModifiedBy,
-                ModificationDate = entity.ModificationDate
-            };
-
+           
             return View(model);
         }
 
